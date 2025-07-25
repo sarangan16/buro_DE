@@ -4,12 +4,18 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Home from './components/Home';
+import Navbar from './components/Navbar';
+import Login from './components/Login';
+import FAQ from './components/FAQ'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <App />
+    <Navbar />
     <Home />
+    <FAQ />
+    <Login />
 
   </React.StrictMode>
 );

@@ -6,7 +6,7 @@ function Home() {
       <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
-            <p className="mt-2 text-4xl font-semibold tracking-wide text-pretty sm:text-5xl lg:text-balance dark:text-indigo-700">
+            <p className="mt-2 text-4xl font-semibold tracking-wide text-pretty sm:text-5xl lg:text-balance text-blue-600 dark:text-blue-500">
               Germany Bürocrazy Made Simple
             </p>
             <p className="mt-6 text-lg/8 text-gray-700">
