@@ -3,7 +3,6 @@ import '../css/Login.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser,faEnvelope,faKey } from '@fortawesome/free-solid-svg-icons'
 
-
 const Login = () => {
 
   const [action,setAction] = useState('Sign Up')

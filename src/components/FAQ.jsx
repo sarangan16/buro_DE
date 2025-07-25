@@ -1,5 +1,33 @@
 import React from 'react';
 
+// Array > Object of FAQ's 
+const faqList = [
+  {
+    question: 'How do I find the right Bürgeramt office for my address?',
+    answer: 'You can search by entering your ZIP code or city name in the office finder. Our app will list nearby offices with their services and opening hours.'
+  },
+  {
+    question: 'What documents do I need to bring for Anmeldung or Abmeldung?',
+    answer: 'Each service page lists required documents. Typically, you’ll need a valid ID or passport, rental contract, and completed forms. Check the specific office’s instructions.'
+  },
+  {
+    question: 'Can I book an appointment online through this app?',
+    answer: 'Yes! Once you find your office, we provide direct links to their official appointment booking system if available.'
+  },
+  {
+    question: 'Is it possible to submit application forms online?',
+    answer: 'Some offices offer online form submission. If available, the app guides you through filling and submitting the forms digitally.'
+  },
+  {
+    question: 'How long does the Anmeldung or Abmeldung process take?',
+    answer: 'Processing time varies by office, but usually ranges from a few minutes to an hour during your appointment.'
+  },
+  {
+    question: 'Can I print or save my filled application forms?',
+    answer: 'Yes, after completing forms in the app, you can download and print a PDF copy for your records and office submission.'
+  }
+];
+
 function FAQ() {
   return (
     <div className="relative w-full bg-white px-6 pt-10 pb-8 mt-8 shadow-xl ring-1 ring-gray-900/5 sm:mx-auto sm:max-w-2xl sm:rounded-lg sm:px-10">
@@ -31,32 +59,5 @@ function FAQ() {
     </div>
   );
 }
-
-const faqList = [
-  {
-    question: 'How do I find the right Bürgeramt office for my address?',
-    answer: 'You can search by entering your ZIP code or city name in the office finder. Our app will list nearby offices with their services and opening hours.'
-  },
-  {
-    question: 'What documents do I need to bring for Anmeldung or Abmeldung?',
-    answer: 'Each service page lists required documents. Typically, you’ll need a valid ID or passport, rental contract, and completed forms. Check the specific office’s instructions.'
-  },
-  {
-    question: 'Can I book an appointment online through this app?',
-    answer: 'Yes! Once you find your office, we provide direct links to their official appointment booking system if available.'
-  },
-  {
-    question: 'Is it possible to submit application forms online?',
-    answer: 'Some offices offer online form submission. If available, the app guides you through filling and submitting the forms digitally.'
-  },
-  {
-    question: 'How long does the Anmeldung or Abmeldung process take?',
-    answer: 'Processing time varies by office, but usually ranges from a few minutes to an hour during your appointment.'
-  },
-  {
-    question: 'Can I print or save my filled application forms?',
-    answer: 'Yes, after completing forms in the app, you can download and print a PDF copy for your records and office submission.'
-  }
-];
 
 export default FAQ;

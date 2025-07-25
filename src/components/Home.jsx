@@ -7,10 +7,10 @@ function Home() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
             <p className="mt-2 text-4xl font-semibold tracking-wide text-pretty sm:text-5xl lg:text-balance text-blue-600 dark:text-blue-500">
-              Germany Bürocrazy Made Simple
+              Germany Bürokratie? Einfach gemacht!
             </p>
             <p className="mt-6 text-lg/8 text-gray-700">
-              Your personal guide to Bürgeramt appointments, Anmeldung forms, and essential documents — available in multiple languages.
+              Say goodbye to confusion and long waits — find your Bürgeramt office, check required documents, book appointments, and fill forms all in one place. Bürokrasy? We keep it simple, so you don’t have to!
             </p>
           </div>
 

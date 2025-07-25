@@ -14,28 +14,25 @@ const Navbar = () => {
               className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
             >
               <span className="absolute -inset-0.5"></span>
-              <span className="sr-only">Open main menu</span>
-              {/* Hamburger icons omitted for brevity */}
             </button>
           </div>
 
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
               <img
-                src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                alt="Your Company"
-                className="h-8 w-auto"
+                src="https://as1.ftcdn.net/v2/jpg/03/71/62/70/1000_F_371627039_GWljiSli9q5mZFXXYTteMkI48fEOTw8Z.jpg"
+                alt="Logo"
+                className="h-12 w-auto"
               />
             </div>
 
-            <div className="hidden sm:ml-6 sm:block">
+            <div className="hidden sm:flex sm:flex-1 sm:justify-end sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 <Link
                   to="/"
-                  className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
-                  aria-current="page"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
                 >
-                  Services
+                  Home
                 </Link>
                 <Link
                   to="/appointments"
