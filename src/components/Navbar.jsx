@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
@@ -34,12 +34,7 @@ const Navbar = () => {
                 >
                   Home
                 </Link>
-                <Link
-                  to="/appointments"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                >
-                  Appointments
-                </Link>
+
                 <Link
                   to="/faq"
                   className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
