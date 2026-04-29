@@ -177,7 +177,8 @@ const documentsRequired = {
     "Civil status certificates (if applicable)",
     "In case of representation: Written power of attorney / declaration of consent",
     {
-      downloadLink: "https://example.com/anmeldung-form.pdf", // Link to the Anmeldung form
+      downloadLink:
+        "https://www.duesseldorf.de/fileadmin/Amt33/Einwohnermeldeamt/Formulare/Meldeschein.pdf",
     },
   ],
   Abmeldung: [
@@ -186,7 +187,8 @@ const documentsRequired = {
     "If you are deregistering by mail: Completed 'Deregistration with the Registration Authority' form",
     "If more than three people are being deregistered, use additional registration forms",
     {
-      downloadLink: "https://example.com/abmeldung-form.pdf", // Link to the Abmeldung form
+      downloadLink:
+        "https://www.stw.berlin/assets/sw-berlin/files/Wohnen/abmeldung_bei_der_meldebehoerde.pdf",
     },
   ],
   Pass: [
@@ -194,7 +196,8 @@ const documentsRequired = {
     "Proof of identity",
     "Previous passport (if applicable)",
     {
-      downloadLink: "https://example.com/pass-form.pdf",
+      downloadLink:
+        "https://australien.diplo.de/resource/blob/2415828/171cd32165f7cd2b0236bf59509c63ac/antrag-pass-erwachsene-deutsch-englisch-data.pdf",
     },
   ],
 };
