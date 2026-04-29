@@ -1,350 +1,390 @@
 import React, { useState } from "react";
 
+// --- DATA ---
+// Each city has offices with their services and an official booking link.
+// We removed fake appointment slots because Germany's Bürgeramt booking is done
+// through official government portals — we just link people there directly.
+
 const officesData = {
-  Berlin: [
-    {
-      id: 1,
-      name: "Bürgeramt Rathaus Tiergarten",
-      address: "Mathilde‑Jacob‑Platz 1, 10551 Berlin",
-      services: ["Anmeldung", "Abmeldung", "Pass"],
-      appointments: [
-        "2025-08-01 10:00",
-        "2025-08-01 11:30",
-        "2025-08-02 09:00",
-      ],
-    },
-    {
-      id: 2,
-      name: "Bürgeramt Rathaus Mitte",
-      address: "Karl‑Marx‑Allee 31, 10178 Berlin",
-      services: ["Anmeldung", "Abmeldung", "Pass"],
-      appointments: ["2025-08-03 14:00", "2025-08-04 09:30"],
-    },
-    {
-      id: 3,
-      name: "Bürgeramt Wedding",
-      address: "Brunnenstraße 102, 13355 Berlin",
-      services: ["Anmeldung", "Abmeldung"],
-      appointments: ["2025-08-05 10:15", "2025-08-06 12:45"],
-    },
-    {
-      id: 4,
-      name: "Bürgeramt Neukölln",
-      address: "Karl-Marx-Straße 118, 12043 Berlin",
-      services: ["Abmeldung", "Pass"],
-      appointments: ["2025-08-07 08:30", "2025-08-09 14:00"],
-    },
-  ],
-  Hamburg: [
-    {
-      id: 5,
-      name: "Kundenzentrum Hamburg‑Mitte",
-      address: "Klosterwall 8, 20095 Hamburg",
-      services: ["Anmeldung", "Abmeldung"],
-      appointments: ["2025-08-02 11:00", "2025-08-06 13:00"],
-    },
-    {
-      id: 6,
-      name: "Kundenzentrum Billstedt",
-      address: "Billstedt Center, Hamburg",
-      services: ["Anmeldung", "Abmeldung"],
-      appointments: ["2025-08-01 09:15", "2025-08-07 15:45"],
-    },
-    {
-      id: 7,
-      name: "Kundenzentrum Altona",
-      address: "Große Bergstraße 254, 22767 Hamburg",
-      services: ["Anmeldung", "Pass"],
-      appointments: ["2025-08-10 11:30", "2025-08-12 14:00"],
-    },
-    {
-      id: 8,
-      name: "Kundenzentrum Harburg",
-      address: "Rathausplatz 1, 21073 Hamburg",
-      services: ["Abmeldung"],
-      appointments: ["2025-08-03 15:00", "2025-08-05 09:45"],
-    },
-  ],
-  Munich: [
-    {
-      id: 9,
-      name: "Einwohnermeldeamt München‑City (KVR)",
-      address: "Ruppertstraße 19, 80466 München",
-      services: ["Anmeldung", "Abmeldung", "Pass"],
-      appointments: ["2025-08-03 08:30", "2025-08-03 11:00"],
-    },
-    {
-      id: 10,
-      name: "Einwohnermeldeamt München-West",
-      address: "Pasinger Bahnhofsplatz 1, 81241 München",
-      services: ["Anmeldung", "Abmeldung"],
-      appointments: ["2025-08-05 09:00", "2025-08-07 10:30"],
-    },
-    {
-      id: 11,
-      name: "Einwohnermeldeamt München-Ost",
-      address: "Klinikum der Universität München, 81925 München",
-      services: ["Abmeldung"],
-      appointments: ["2025-08-02 13:15", "2025-08-04 16:00"],
-    },
-  ],
-  Düsseldorf: [
-    {
-      id: 12,
-      name: "Einwohnermeldeamt Düsseldorf‑Oberkassel",
-      address: "Luegallee 65, 40545 Düsseldorf",
-      services: ["Anmeldung", "Abmeldung"],
-      appointments: ["2025-08-01 10:45", "2025-08-08 12:00"],
-    },
-    {
-      id: 13,
-      name: "Einwohnermeldeamt Düsseldorf‑Kaiserswerth",
-      address: "Kaiserwerther Markt 35, 40489 Düsseldorf",
-      services: ["Anmeldung", "Abmeldung"],
-      appointments: ["2025-08-02 09:00", "2025-08-09 16:00"],
-    },
-    {
-      id: 14,
-      name: "Einwohnermeldeamt Düsseldorf‑Gerresheim",
-      address: "Neusser Tor 8, 40625 Düsseldorf",
-      services: ["Anmeldung", "Abmeldung"],
-      appointments: ["2025-08-04 13:30", "2025-08-10 10:00"],
-    },
-    {
-      id: 15,
-      name: "Einwohnermeldeamt Düsseldorf‑Düsseltal",
-      address: "Kaiserswerther Str. 126, 40221 Düsseldorf",
-      services: ["Pass"],
-      appointments: ["2025-08-07 14:30", "2025-08-10 15:15"],
-    },
-  ],
-  Frankfurt: [
-    {
-      id: 16,
-      name: "Bürgeramt Frankfurt-Nordwest",
-      address: "Niddastraße 55, 60439 Frankfurt",
-      services: ["Anmeldung", "Pass"],
-      appointments: ["2025-08-06 10:00", "2025-08-09 13:00"],
-    },
-    {
-      id: 17,
-      name: "Bürgeramt Frankfurt-Süd",
-      address: "Hessenplatz 2, 60528 Frankfurt",
-      services: ["Anmeldung", "Abmeldung"],
-      appointments: ["2025-08-01 14:30", "2025-08-04 10:30"],
-    },
-    {
-      id: 18,
-      name: "Bürgeramt Frankfurt-Zentrum",
-      address: "Römerberg 1, 60311 Frankfurt",
-      services: ["Abmeldung", "Pass"],
-      appointments: ["2025-08-05 09:30", "2025-08-07 16:30"],
-    },
-  ],
-  Stuttgart: [
-    {
-      id: 19,
-      name: "Bürgeramt Stuttgart-Feuerbach",
-      address: "Wilhelminenstraße 33, 70469 Stuttgart",
-      services: ["Anmeldung", "Abmeldung"],
-      appointments: ["2025-08-01 10:00", "2025-08-03 14:00"],
-    },
-    {
-      id: 20,
-      name: "Bürgeramt Stuttgart-Mitte",
-      address: "Eberhardstraße 35, 70173 Stuttgart",
-      services: ["Pass"],
-      appointments: ["2025-08-04 15:00", "2025-08-06 11:30"],
-    },
-    {
-      id: 21,
-      name: "Bürgeramt Stuttgart-Süd",
-      address: "Rotebühlstraße 137, 70197 Stuttgart",
-      services: ["Abmeldung", "Pass"],
-      appointments: ["2025-08-02 12:00", "2025-08-07 09:30"],
-    },
-  ],
+  Berlin: {
+    bookingUrl: "https://service.berlin.de/terminvereinbarung/",
+    offices: [
+      {
+        id: 1,
+        name: "Bürgeramt Rathaus Tiergarten",
+        address: "Mathilde-Jacob-Platz 1, 10551 Berlin",
+        services: ["Anmeldung", "Abmeldung", "Pass"],
+      },
+      {
+        id: 2,
+        name: "Bürgeramt Rathaus Mitte",
+        address: "Karl-Marx-Allee 31, 10178 Berlin",
+        services: ["Anmeldung", "Abmeldung", "Pass"],
+      },
+      {
+        id: 3,
+        name: "Bürgeramt Wedding",
+        address: "Brunnenstraße 102, 13355 Berlin",
+        services: ["Anmeldung", "Abmeldung"],
+      },
+      {
+        id: 4,
+        name: "Bürgeramt Neukölln",
+        address: "Karl-Marx-Straße 118, 12043 Berlin",
+        services: ["Abmeldung", "Pass"],
+      },
+    ],
+  },
+  Hamburg: {
+    bookingUrl: "https://www.hamburg.de/buergerservice/",
+    offices: [
+      {
+        id: 5,
+        name: "Kundenzentrum Hamburg-Mitte",
+        address: "Klosterwall 8, 20095 Hamburg",
+        services: ["Anmeldung", "Abmeldung"],
+      },
+      {
+        id: 6,
+        name: "Kundenzentrum Billstedt",
+        address: "Billstedt Center, Hamburg",
+        services: ["Anmeldung", "Abmeldung"],
+      },
+      {
+        id: 7,
+        name: "Kundenzentrum Altona",
+        address: "Große Bergstraße 254, 22767 Hamburg",
+        services: ["Anmeldung", "Pass"],
+      },
+      {
+        id: 8,
+        name: "Kundenzentrum Harburg",
+        address: "Rathausplatz 1, 21073 Hamburg",
+        services: ["Abmeldung"],
+      },
+    ],
+  },
+  Munich: {
+    bookingUrl: "https://www.muenchen.de/rathaus/terminvereinbarung",
+    offices: [
+      {
+        id: 9,
+        name: "Einwohnermeldeamt München-City (KVR)",
+        address: "Ruppertstraße 19, 80466 München",
+        services: ["Anmeldung", "Abmeldung", "Pass"],
+      },
+      {
+        id: 10,
+        name: "Einwohnermeldeamt München-West",
+        address: "Pasinger Bahnhofsplatz 1, 81241 München",
+        services: ["Anmeldung", "Abmeldung"],
+      },
+      {
+        id: 11,
+        name: "Einwohnermeldeamt München-Ost",
+        address: "Klinikum der Universität München, 81925 München",
+        services: ["Abmeldung"],
+      },
+    ],
+  },
+  Düsseldorf: {
+    bookingUrl: "https://www.duesseldorf.de/buergerbuero/online-services",
+    offices: [
+      {
+        id: 12,
+        name: "Einwohnermeldeamt Düsseldorf-Oberkassel",
+        address: "Luegallee 65, 40545 Düsseldorf",
+        services: ["Anmeldung", "Abmeldung"],
+      },
+      {
+        id: 13,
+        name: "Einwohnermeldeamt Düsseldorf-Kaiserswerth",
+        address: "Kaiserwerther Markt 35, 40489 Düsseldorf",
+        services: ["Anmeldung", "Abmeldung"],
+      },
+      {
+        id: 14,
+        name: "Einwohnermeldeamt Düsseldorf-Gerresheim",
+        address: "Neusser Tor 8, 40625 Düsseldorf",
+        services: ["Anmeldung", "Abmeldung"],
+      },
+      {
+        id: 15,
+        name: "Einwohnermeldeamt Düsseldorf-Düsseltal",
+        address: "Kaiserswerther Str. 126, 40221 Düsseldorf",
+        services: ["Pass"],
+      },
+    ],
+  },
+  Frankfurt: {
+    bookingUrl: "https://frankfurt.de/buergeramt",
+    offices: [
+      {
+        id: 16,
+        name: "Bürgeramt Frankfurt-Nordwest",
+        address: "Niddastraße 55, 60439 Frankfurt",
+        services: ["Anmeldung", "Pass"],
+      },
+      {
+        id: 17,
+        name: "Bürgeramt Frankfurt-Süd",
+        address: "Hessenplatz 2, 60528 Frankfurt",
+        services: ["Anmeldung", "Abmeldung"],
+      },
+      {
+        id: 18,
+        name: "Bürgeramt Frankfurt-Zentrum",
+        address: "Römerberg 1, 60311 Frankfurt",
+        services: ["Abmeldung", "Pass"],
+      },
+    ],
+  },
+  Stuttgart: {
+    bookingUrl: "https://www.stuttgart.de/buergerservices/",
+    offices: [
+      {
+        id: 19,
+        name: "Bürgeramt Stuttgart-Feuerbach",
+        address: "Wilhelminenstraße 33, 70469 Stuttgart",
+        services: ["Anmeldung", "Abmeldung"],
+      },
+      {
+        id: 20,
+        name: "Bürgeramt Stuttgart-Mitte",
+        address: "Eberhardstraße 35, 70173 Stuttgart",
+        services: ["Pass"],
+      },
+      {
+        id: 21,
+        name: "Bürgeramt Stuttgart-Süd",
+        address: "Rotebühlstraße 137, 70197 Stuttgart",
+        services: ["Abmeldung", "Pass"],
+      },
+    ],
+  },
 };
 
+// Documents needed per service.
+// Each item is either a string (document name) or an object with a downloadLink.
 const documentsRequired = {
   Anmeldung: [
-    "Proof of identity (eID card, passport, or child's passport)",
-    "Confirmation of occupancy from the landlord",
-    "For Ukrainian refugees: Confirmation of permanent accommodation",
-    "For parents with joint custody: Consent of the absent parent",
-    "For separated parents: Declaration of consent with proof of identity",
-    "For multiple apartments: Supplementary sheet for registration/declaration of main residence",
-    "Civil status certificates (if applicable)",
-    "In case of representation: Written power of attorney / declaration of consent",
+    "Valid passport or national ID card",
+    "Wohnungsgeberbestätigung — landlord confirmation of your address (required by law)",
+    "If you have children: their passports or birth certificates",
+    "If someone else is registering for you: a signed power of attorney (Vollmacht) and a copy of your ID",
+    "If you're registering multiple addresses: a form declaring which is your main residence (Hauptwohnung)",
     {
-      downloadLink:
-        "https://www.duesseldorf.de/fileadmin/Amt33/Einwohnermeldeamt/Formulare/Meldeschein.pdf",
+      label: "Download the Anmeldung form (Meldeschein)",
+      url: "https://www.duesseldorf.de/fileadmin/Amt33/Einwohnermeldeamt/Formulare/Meldeschein.pdf",
     },
   ],
   Abmeldung: [
-    "Passport or valid ID",
+    "Valid passport or national ID card",
     "Completed Abmeldung form",
-    "If you are deregistering by mail: Completed 'Deregistration with the Registration Authority' form",
-    "If more than three people are being deregistered, use additional registration forms",
+    "If registering by mail: the 'Deregistration with the Registration Authority' form",
+    "For more than 3 people deregistering at once: additional registration forms for each person",
     {
-      downloadLink:
-        "https://www.stw.berlin/assets/sw-berlin/files/Wohnen/abmeldung_bei_der_meldebehoerde.pdf",
+      label: "Download the Abmeldung form",
+      url: "https://www.stw.berlin/assets/sw-berlin/files/Wohnen/abmeldung_bei_der_meldebehoerde.pdf",
     },
   ],
   Pass: [
-    "Passport photo",
-    "Proof of identity",
-    "Previous passport (if applicable)",
+    "Biometric passport photo (taken recently — most Bürgerämter are strict about this)",
+    "Current valid ID or expired passport you are replacing",
+    "If it's your first German passport: birth certificate",
+    "For children under 16: both parents must be present, or one parent with written consent from the other",
     {
-      downloadLink:
-        "https://australien.diplo.de/resource/blob/2415828/171cd32165f7cd2b0236bf59509c63ac/antrag-pass-erwachsene-deutsch-englisch-data.pdf",
+      label: "Download the passport application form",
+      url: "https://australien.diplo.de/resource/blob/2415828/171cd32165f7cd2b0236bf59509c63ac/antrag-pass-erwachsene-deutsch-englisch-data.pdf",
     },
   ],
 };
 
+// --- COMPONENT ---
+
 function Appointments() {
   const [cityInput, setCityInput] = useState("");
-  const [showCityList, setShowCityList] = useState(false);
-  const [citySuggestions, setCitySuggestions] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [selectedCity, setSelectedCity] = useState("");
-  const [offices, setOffices] = useState([]);
-  const [selectedOffice, setSelectedOffice] = useState(null);
   const [selectedService, setSelectedService] = useState("");
-  const [selectedAppointment, setSelectedAppointment] = useState("");
+  const [selectedOffice, setSelectedOffice] = useState(null);
 
-  const cities = Object.keys(officesData);
+  // For the interactive checklist — tracks which items the user has ticked off
+  const [checkedDocs, setCheckedDocs] = useState({});
 
-  function handleInputChange(e) {
-    const value = e.target.value;
-    setCityInput(value);
-    setShowCityList(true);
+  const allCities = Object.keys(officesData);
 
-    if (value === "") {
-      setCitySuggestions(cities);
-      return;
+  // Filter city suggestions as user types
+  const citySuggestions = allCities.filter(function (city) {
+    return city.toLowerCase().startsWith(cityInput.toLowerCase());
+  });
+
+  function handleCityInput(e) {
+    setCityInput(e.target.value);
+    setShowDropdown(true);
+
+    // If user clears the field, reset everything below
+    if (e.target.value === "") {
+      resetAll();
     }
-
-    const filteredCities = cities.filter(function (city) {
-      return city.toLowerCase().startsWith(value.toLowerCase());
-    });
-    setCitySuggestions(filteredCities);
   }
 
-  function selectCity(city) {
+  function pickCity(city) {
     setSelectedCity(city);
     setCityInput(city);
-    setShowCityList(false);
-    setSelectedOffice(null);
+    setShowDropdown(false);
     setSelectedService("");
-    setSelectedAppointment("");
-    setOffices([]);
-  }
-
-  function selectService(e) {
-    const service = e.target.value;
-    setSelectedService(service);
     setSelectedOffice(null);
-    setSelectedAppointment("");
-
-    if (selectedCity && service) {
-      const cityOffices = officesData[selectedCity] || [];
-      const filteredOffices = cityOffices.filter(function (office) {
-        return office.services.indexOf(service) !== -1;
-      });
-      setOffices(filteredOffices);
-    }
+    setCheckedDocs({});
   }
 
-  function selectOffice(office) {
+  function handleServiceChange(e) {
+    setSelectedService(e.target.value);
+    setSelectedOffice(null);
+    setCheckedDocs({});
+  }
+
+  function pickOffice(office) {
     setSelectedOffice(office);
-    setSelectedAppointment("");
+    setCheckedDocs({});
   }
 
-  function selectAppointment(e) {
-    setSelectedAppointment(e.target.value);
+  function toggleDoc(index) {
+    setCheckedDocs(function (prev) {
+      return { ...prev, [index]: !prev[index] };
+    });
   }
 
-  const appointments = selectedOffice ? selectedOffice.appointments : [];
-  const serviceDocuments = selectedService
-    ? documentsRequired[selectedService]
-    : [];
-  const downloadLink =
-    serviceDocuments.length > 0
-      ? serviceDocuments[serviceDocuments.length - 1].downloadLink
-      : "";
+  function resetAll() {
+    setSelectedCity("");
+    setSelectedService("");
+    setSelectedOffice(null);
+    setCheckedDocs({});
+  }
+
+  // Only show offices that support the selected service
+  const filteredOffices =
+    selectedCity && selectedService
+      ? officesData[selectedCity].offices.filter(function (office) {
+          return office.services.includes(selectedService);
+        })
+      : [];
+
+  const docs = selectedService ? documentsRequired[selectedService] : [];
+
+  // How many non-link docs are checked
+  const stringDocs = docs.filter(function (d) {
+    return typeof d === "string";
+  });
+  const checkedCount = Object.values(checkedDocs).filter(Boolean).length;
+
+  const cityBookingUrl = selectedCity
+    ? officesData[selectedCity].bookingUrl
+    : "";
 
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-white shadow-lg rounded-lg">
-      <div className="mb-6">
-        <label className="block text-lg font-medium text-gray-700 mb-2">
-          Enter City Name:
+    <div className="max-w-2xl mx-auto">
+      {/* Step 1 — City */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+          Step 1 — Where are you?
+        </h2>
+        <label className="block text-base font-medium text-gray-700 mb-2">
+          Your city
         </label>
-        <input
-          type="text"
-          value={cityInput}
-          onChange={handleInputChange}
-          onFocus={() => setShowCityList(true)}
-          placeholder="e.g. Berlin"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {showCityList && citySuggestions.length > 0 && (
-          <ul className="mt-2 border border-gray-200 rounded-lg max-h-40 overflow-auto bg-white shadow-md">
-            {citySuggestions.map(function (city, i) {
-              return (
-                <li
-                  key={i}
-                  className="p-3 cursor-pointer hover:bg-gray-100"
-                  onClick={() => selectCity(city)}
-                >
-                  {city}
-                </li>
-              );
-            })}
-          </ul>
-        )}
+        <div className="relative">
+          <input
+            type="text"
+            value={cityInput}
+            onChange={handleCityInput}
+            onFocus={() => setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+            placeholder="Type a city, e.g. Berlin"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {showDropdown && citySuggestions.length > 0 && (
+            <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-md max-h-40 overflow-auto">
+              {citySuggestions.map(function (city) {
+                return (
+                  <li
+                    key={city}
+                    onMouseDown={() => pickCity(city)}
+                    className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-50"
+                  >
+                    {city}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       </div>
 
+      {/* Step 2 — Service (only shows once city is picked) */}
       {selectedCity && (
-        <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700 mb-2">
-            Select Service:
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+            Step 2 — What do you need to do?
+          </h2>
+          <label className="block text-base font-medium text-gray-700 mb-2">
+            Select a service
           </label>
           <select
             value={selectedService}
-            onChange={selectService}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={handleServiceChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
-            <option value="">-- Choose a service --</option>
-            {["Anmeldung", "Abmeldung", "Pass"].map(function (service) {
-              return (
-                <option key={service} value={service}>
-                  {service}
-                </option>
-              );
-            })}
+            <option value="">-- Choose one --</option>
+            <option value="Anmeldung">Anmeldung — Register your address</option>
+            <option value="Abmeldung">
+              Abmeldung — Deregister your address
+            </option>
+            <option value="Pass">Pass / ID — Passport or ID card</option>
           </select>
         </div>
       )}
 
-      {offices.length > 0 && (
-        <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700 mb-2">
-            Select Office:
-          </label>
-          <ul className="border border-gray-300 rounded-lg max-h-60 overflow-auto bg-white shadow-md">
-            {offices.map(function (office) {
+      {/* Step 3 — Pick an office (only shows when we have filtered results) */}
+      {filteredOffices.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+            Step 3 — Choose a nearby office
+          </h2>
+          <p className="text-sm text-gray-500 mb-3">
+            These offices in {selectedCity} offer {selectedService}:
+          </p>
+          <ul className="space-y-2">
+            {filteredOffices.map(function (office) {
+              var isSelected =
+                selectedOffice && selectedOffice.id === office.id;
               return (
                 <li
                   key={office.id}
-                  onClick={() => selectOffice(office)}
-                  className={`p-4 cursor-pointer hover:bg-gray-100 ${
-                    selectedOffice && selectedOffice.id === office.id
-                      ? "bg-gray-200 font-semibold"
-                      : ""
+                  onClick={() => pickOffice(office)}
+                  className={`p-4 rounded-lg border cursor-pointer transition-colors duration-100 ${
+                    isSelected
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                   }`}
                 >
-                  <div>{office.name}</div>
-                  <div className="text-sm text-gray-500">{office.address}</div>
+                  <div className="font-medium text-sm text-gray-800">
+                    {office.name}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    {office.address}
+                  </div>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {office.services.map(function (s) {
+                      return (
+                        <span
+                          key={s}
+                          className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"
+                        >
+                          {s}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </li>
               );
             })}
@@ -352,52 +392,137 @@ function Appointments() {
         </div>
       )}
 
-      {selectedOffice && selectedService && appointments.length > 0 && (
-        <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700 mb-2">
-            Select Appointment Slot:
-          </label>
-          <select
-            value={selectedAppointment}
-            onChange={selectAppointment}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">-- Choose a time --</option>
-            {appointments.map(function (slot, i) {
-              return (
-                <option key={i} value={slot}>
-                  {slot}
-                </option>
-              );
-            })}
-          </select>
+      {/* No offices warning */}
+      {selectedCity && selectedService && filteredOffices.length === 0 && (
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-5 mb-4">
+          <p className="text-orange-800 text-sm">
+            No offices in {selectedCity} offer {selectedService} in our list.
+            Try checking the official city website directly.
+          </p>
         </div>
       )}
 
-      {selectedService && (
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Documents Required for {selectedService}:
-          </h2>
-          <ul className="list-disc list-inside text-gray-700">
-            {serviceDocuments.map(function (doc, i) {
-              if (typeof doc === "string") {
-                return <li key={i}>{doc}</li>;
-              } else if (doc.downloadLink) {
+      {/* Step 4 — Documents checklist (shows once a service is selected) */}
+      {selectedService && docs.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">
+              Step 4 — Documents to bring
+            </h2>
+            {stringDocs.length > 0 && (
+              <span className="text-xs text-gray-400">
+                {checkedCount} / {stringDocs.length} ready
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-gray-500 mb-4">
+            Tick each item as you prepare it — don't show up without these!
+          </p>
+
+          <ul className="space-y-3">
+            {docs.map(function (doc, index) {
+              // Download link items look different from regular checklist items
+              if (typeof doc !== "string") {
                 return (
-                  <li key={i}>
+                  <li key={index} className="pt-2 border-t border-gray-100">
                     <a
-                      href={doc.downloadLink}
-                      className="text-blue-500 underline"
-                      download
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline font-medium"
                     >
-                      Download {selectedService} Form
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                      {doc.label}
                     </a>
                   </li>
                 );
               }
+
+              return (
+                <li
+                  key={index}
+                  onClick={() => toggleDoc(index)}
+                  className="flex items-start gap-3 cursor-pointer group"
+                >
+                  {/* Custom checkbox */}
+                  <div
+                    className={`mt-0.5 w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
+                      checkedDocs[index]
+                        ? "bg-green-500 border-green-500"
+                        : "border-gray-300 group-hover:border-green-400"
+                    }`}
+                  >
+                    {checkedDocs[index] && (
+                      <svg
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                  <span
+                    className={`text-sm leading-snug ${
+                      checkedDocs[index]
+                        ? "line-through text-gray-400"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    {doc}
+                  </span>
+                </li>
+              );
             })}
           </ul>
+
+          {/* All checked celebration message */}
+          {checkedCount === stringDocs.length && stringDocs.length > 0 && (
+            <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700 font-medium text-center">
+              ✅ You're ready! Head to the Bürgeramt with confidence.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Step 5 — Book appointment (shows once office is selected) */}
+      {selectedOffice && cityBookingUrl && (
+        <div className="bg-blue-600 rounded-xl p-6 text-white mb-4">
+          <h2 className="font-semibold text-lg mb-1">Ready to book?</h2>
+          <p className="text-blue-100 text-sm mb-4">
+            Appointments for {selectedOffice.name} are booked through{" "}
+            {selectedCity}'s official portal. We'll take you there now.
+          </p>
+          <a
+            href={cityBookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-white text-blue-600 font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-blue-50 transition-colors"
+          >
+            Book on the official {selectedCity} website →
+          </a>
+          <p className="text-xs text-blue-200 mt-3">
+            Note: You'll be taken to the city's own booking system. Appointments
+            can be competitive — check back often if slots are full.
+          </p>
         </div>
       )}
     </div>
