@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 
-// --- DATA ---
-// Each city has offices with their services and an official booking link.
-// We removed fake appointment slots because Germany's Bürgeramt booking is done
-// through official government portals — we just link people there directly.
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
 
-const officesData = {
+// All the offices we know about, grouped by city.
+// Each city also has its official booking URL — because Germany's booking
+// system is internal, we just send users to the right portal.
+var officesData = {
   Berlin: {
     bookingUrl: "https://service.berlin.de/terminvereinbarung/",
     offices: [
@@ -104,12 +106,6 @@ const officesData = {
       },
       {
         id: 14,
-        name: "Einwohnermeldeamt Düsseldorf-Gerresheim",
-        address: "Neusser Tor 8, 40625 Düsseldorf",
-        services: ["Anmeldung", "Abmeldung"],
-      },
-      {
-        id: 15,
         name: "Einwohnermeldeamt Düsseldorf-Düsseltal",
         address: "Kaiserswerther Str. 126, 40221 Düsseldorf",
         services: ["Pass"],
@@ -120,19 +116,19 @@ const officesData = {
     bookingUrl: "https://frankfurt.de/buergeramt",
     offices: [
       {
-        id: 16,
+        id: 15,
         name: "Bürgeramt Frankfurt-Nordwest",
         address: "Niddastraße 55, 60439 Frankfurt",
         services: ["Anmeldung", "Pass"],
       },
       {
-        id: 17,
+        id: 16,
         name: "Bürgeramt Frankfurt-Süd",
         address: "Hessenplatz 2, 60528 Frankfurt",
         services: ["Anmeldung", "Abmeldung"],
       },
       {
-        id: 18,
+        id: 17,
         name: "Bürgeramt Frankfurt-Zentrum",
         address: "Römerberg 1, 60311 Frankfurt",
         services: ["Abmeldung", "Pass"],
@@ -143,19 +139,19 @@ const officesData = {
     bookingUrl: "https://www.stuttgart.de/buergerservices/",
     offices: [
       {
-        id: 19,
+        id: 18,
         name: "Bürgeramt Stuttgart-Feuerbach",
         address: "Wilhelminenstraße 33, 70469 Stuttgart",
         services: ["Anmeldung", "Abmeldung"],
       },
       {
-        id: 20,
+        id: 19,
         name: "Bürgeramt Stuttgart-Mitte",
         address: "Eberhardstraße 35, 70173 Stuttgart",
         services: ["Pass"],
       },
       {
-        id: 21,
+        id: 20,
         name: "Bürgeramt Stuttgart-Süd",
         address: "Rotebühlstraße 137, 70197 Stuttgart",
         services: ["Abmeldung", "Pass"],
@@ -165,366 +161,513 @@ const officesData = {
 };
 
 // Documents needed per service.
-// Each item is either a string (document name) or an object with a downloadLink.
-const documentsRequired = {
+// Items with a `url` are download links shown differently from the checklist items.
+var documentsData = {
   Anmeldung: [
-    "Valid passport or national ID card",
-    "Wohnungsgeberbestätigung — landlord confirmation of your address (required by law)",
-    "If you have children: their passports or birth certificates",
-    "If someone else is registering for you: a signed power of attorney (Vollmacht) and a copy of your ID",
-    "If you're registering multiple addresses: a form declaring which is your main residence (Hauptwohnung)",
+    { text: "Valid passport or national ID card", url: null },
     {
-      label: "Download the Anmeldung form (Meldeschein)",
+      text: "Wohnungsgeberbestätigung — your landlord's written confirmation that you live there",
+      url: null,
+    },
+    {
+      text: "Children's passports or birth certificates (if you have children)",
+      url: null,
+    },
+    {
+      text: "Written Vollmacht (power of attorney) + copy of your ID — only if someone else is going for you",
+      url: null,
+    },
+    {
+      text: "Download the Anmeldung form (Meldeschein)",
       url: "https://www.duesseldorf.de/fileadmin/Amt33/Einwohnermeldeamt/Formulare/Meldeschein.pdf",
     },
   ],
   Abmeldung: [
-    "Valid passport or national ID card",
-    "Completed Abmeldung form",
-    "If registering by mail: the 'Deregistration with the Registration Authority' form",
-    "For more than 3 people deregistering at once: additional registration forms for each person",
+    { text: "Valid passport or national ID card", url: null },
+    { text: "Completed Abmeldung form", url: null },
     {
-      label: "Download the Abmeldung form",
+      text: "If registering by mail: the 'Deregistration with Registration Authority' form",
+      url: null,
+    },
+    {
+      text: "Download the Abmeldung form",
       url: "https://www.stw.berlin/assets/sw-berlin/files/Wohnen/abmeldung_bei_der_meldebehoerde.pdf",
     },
   ],
   Pass: [
-    "Biometric passport photo (taken recently — most Bürgerämter are strict about this)",
-    "Current valid ID or expired passport you are replacing",
-    "If it's your first German passport: birth certificate",
-    "For children under 16: both parents must be present, or one parent with written consent from the other",
     {
-      label: "Download the passport application form",
+      text: "Biometric passport photo — must be recent, offices are strict about this",
+      url: null,
+    },
+    {
+      text: "Current valid ID or the expired passport you are replacing",
+      url: null,
+    },
+    {
+      text: "Birth certificate — only needed if it's your first German passport",
+      url: null,
+    },
+    {
+      text: "For children under 16: both parents present, or one parent with written consent from the other",
+      url: null,
+    },
+    {
+      text: "Download the passport application form",
       url: "https://australien.diplo.de/resource/blob/2415828/171cd32165f7cd2b0236bf59509c63ac/antrag-pass-erwachsene-deutsch-englisch-data.pdf",
     },
   ],
 };
 
-// --- COMPONENT ---
+// ─────────────────────────────────────────────
+// COMPONENT
+// ─────────────────────────────────────────────
 
 function Appointments() {
+  // What the user typed into the city search box
   const [cityInput, setCityInput] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Whether the city dropdown list is visible
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+
+  // The city the user actually selected (empty means none yet)
   const [selectedCity, setSelectedCity] = useState("");
+
+  // The service the user picked from the dropdown
   const [selectedService, setSelectedService] = useState("");
+
+  // The specific office the user clicked on
   const [selectedOffice, setSelectedOffice] = useState(null);
 
-  // For the interactive checklist — tracks which items the user has ticked off
+  // An object tracking which document checkboxes are ticked
+  // e.g. { 0: true, 1: false, 2: true } means first and third items are ticked
   const [checkedDocs, setCheckedDocs] = useState({});
 
-  const allCities = Object.keys(officesData);
+  // ── City autocomplete ──────────────────────
 
-  // Filter city suggestions as user types
-  const citySuggestions = allCities.filter(function (city) {
+  var allCities = Object.keys(officesData);
+
+  // Filter cities that start with what the user typed
+  var citySuggestions = allCities.filter(function (city) {
+    if (cityInput === "") return true; // show all if nothing typed yet
     return city.toLowerCase().startsWith(cityInput.toLowerCase());
   });
 
-  function handleCityInput(e) {
-    setCityInput(e.target.value);
-    setShowDropdown(true);
+  function handleCityTyping(e) {
+    var typed = e.target.value;
+    setCityInput(typed);
+    setShowCityDropdown(true);
 
-    // If user clears the field, reset everything below
-    if (e.target.value === "") {
-      resetAll();
+    // If the user clears the box, reset everything below
+    if (typed === "") {
+      resetEverything();
     }
   }
 
+  function handleCityFocus() {
+    setShowCityDropdown(true);
+  }
+
+  // Called when user clicks a city from the dropdown
   function pickCity(city) {
     setSelectedCity(city);
     setCityInput(city);
-    setShowDropdown(false);
+    setShowCityDropdown(false);
+    // Reset the steps below when city changes
     setSelectedService("");
     setSelectedOffice(null);
     setCheckedDocs({});
   }
 
+  // Hide the dropdown — but with a tiny delay so clicking a city registers first
+  function hideCityDropdown() {
+    setTimeout(function () {
+      setShowCityDropdown(false);
+    }, 150);
+  }
+
+  // ── Service selection ──────────────────────
+
   function handleServiceChange(e) {
     setSelectedService(e.target.value);
+    // When service changes, reset the office and checklist
     setSelectedOffice(null);
     setCheckedDocs({});
   }
 
+  // ── Office selection ───────────────────────
+
   function pickOffice(office) {
     setSelectedOffice(office);
-    setCheckedDocs({});
+    setCheckedDocs({}); // reset checklist when a different office is picked
   }
 
-  function toggleDoc(index) {
+  // ── Document checklist ─────────────────────
+
+  function toggleDocItem(index) {
     setCheckedDocs(function (prev) {
-      return { ...prev, [index]: !prev[index] };
+      // Copy the existing state, then flip the value at this index
+      var updated = Object.assign({}, prev);
+      updated[index] = !updated[index];
+      return updated;
     });
   }
 
-  function resetAll() {
+  // ── Reset everything ───────────────────────
+
+  function resetEverything() {
     setSelectedCity("");
     setSelectedService("");
     setSelectedOffice(null);
     setCheckedDocs({});
   }
 
-  // Only show offices that support the selected service
-  const filteredOffices =
-    selectedCity && selectedService
-      ? officesData[selectedCity].offices.filter(function (office) {
-          return office.services.includes(selectedService);
-        })
-      : [];
+  // ── Derived values ─────────────────────────
 
-  const docs = selectedService ? documentsRequired[selectedService] : [];
+  // Offices in the selected city that offer the selected service
+  var matchingOffices = [];
+  if (selectedCity && selectedService) {
+    matchingOffices = officesData[selectedCity].offices.filter(
+      function (office) {
+        return office.services.includes(selectedService);
+      },
+    );
+  }
 
-  // How many non-link docs are checked
-  const stringDocs = docs.filter(function (d) {
-    return typeof d === "string";
+  // The documents list for the selected service
+  var docs = selectedService ? documentsData[selectedService] : [];
+
+  // Only the checkable items (not the download links)
+  var checkableDocs = docs.filter(function (doc) {
+    return doc.url === null;
   });
-  const checkedCount = Object.values(checkedDocs).filter(Boolean).length;
 
-  const cityBookingUrl = selectedCity
-    ? officesData[selectedCity].bookingUrl
-    : "";
+  // How many checkable items are ticked
+  var checkedCount = checkableDocs.filter(function (doc, index) {
+    return checkedDocs[index] === true;
+  }).length;
+
+  // Progress percentage for the progress bar
+  var progressPercent =
+    checkableDocs.length > 0
+      ? Math.round((checkedCount / checkableDocs.length) * 100)
+      : 0;
+
+  var allDocsDone =
+    checkableDocs.length > 0 && checkedCount === checkableDocs.length;
+
+  // The booking URL for the selected city
+  var bookingUrl = selectedCity ? officesData[selectedCity].bookingUrl : "";
+
+  // Which step are we on? Used to show the step indicator pills
+  var currentStep = 1;
+  if (selectedCity) currentStep = 2;
+  if (selectedService) currentStep = 3;
+  if (selectedOffice) currentStep = 4;
+
+  // ──────────────────────────────────────────
+  // RENDER
+  // ──────────────────────────────────────────
 
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* Step 1 — City */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
-        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
-          Step 1 — Where are you?
-        </h2>
-        <label className="block text-base font-medium text-gray-700 mb-2">
-          Your city
-        </label>
-        <div className="relative">
-          <input
-            type="text"
-            value={cityInput}
-            onChange={handleCityInput}
-            onFocus={() => setShowDropdown(true)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-            placeholder="Type a city, e.g. Berlin"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {showDropdown && citySuggestions.length > 0 && (
-            <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-md max-h-40 overflow-auto">
-              {citySuggestions.map(function (city) {
-                return (
-                  <li
-                    key={city}
-                    onMouseDown={() => pickCity(city)}
-                    className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-50"
-                  >
-                    {city}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      </div>
+    <div style={{ fontFamily: "'Inter', sans-serif" }}>
+      {/* ── Main card ── */}
+      <div className="bg-white/3 border border-white/10 rounded-2xl p-7">
+        {/* Step indicator */}
+        <div className="flex items-center gap-2 mb-7 flex-wrap">
+          {["City", "Service", "Office", "Documents"].map(function (label, i) {
+            var stepNum = i + 1;
+            var isDone = currentStep > stepNum;
+            var isActive = currentStep === stepNum;
 
-      {/* Step 2 — Service (only shows once city is picked) */}
-      {selectedCity && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
-            Step 2 — What do you need to do?
-          </h2>
-          <label className="block text-base font-medium text-gray-700 mb-2">
-            Select a service
-          </label>
-          <select
-            value={selectedService}
-            onChange={handleServiceChange}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          >
-            <option value="">-- Choose one --</option>
-            <option value="Anmeldung">Anmeldung — Register your address</option>
-            <option value="Abmeldung">
-              Abmeldung — Deregister your address
-            </option>
-            <option value="Pass">Pass / ID — Passport or ID card</option>
-          </select>
-        </div>
-      )}
-
-      {/* Step 3 — Pick an office (only shows when we have filtered results) */}
-      {filteredOffices.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
-            Step 3 — Choose a nearby office
-          </h2>
-          <p className="text-sm text-gray-500 mb-3">
-            These offices in {selectedCity} offer {selectedService}:
-          </p>
-          <ul className="space-y-2">
-            {filteredOffices.map(function (office) {
-              var isSelected =
-                selectedOffice && selectedOffice.id === office.id;
-              return (
-                <li
-                  key={office.id}
-                  onClick={() => pickOffice(office)}
-                  className={`p-4 rounded-lg border cursor-pointer transition-colors duration-100 ${
-                    isSelected
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+            return (
+              <React.Fragment key={label}>
+                <span
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all ${
+                    isDone
+                      ? "bg-emerald-500/20 text-emerald-400"
+                      : isActive
+                        ? "bg-blue-500 text-white"
+                        : "bg-white/7 text-white/30"
                   }`}
                 >
-                  <div className="font-medium text-sm text-gray-800">
-                    {office.name}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
-                    {office.address}
-                  </div>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {office.services.map(function (s) {
-                      return (
-                        <span
-                          key={s}
-                          className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"
-                        >
-                          {s}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                  {stepNum} · {label}
+                </span>
+                {/* Dash between steps */}
+                {i < 3 && <span className="text-white/15 text-xs">—</span>}
+              </React.Fragment>
+            );
+          })}
         </div>
-      )}
 
-      {/* No offices warning */}
-      {selectedCity && selectedService && filteredOffices.length === 0 && (
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-5 mb-4">
-          <p className="text-orange-800 text-sm">
-            No offices in {selectedCity} offer {selectedService} in our list.
-            Try checking the official city website directly.
-          </p>
-        </div>
-      )}
+        {/* ── STEP 1: City input ── */}
+        <div className="mb-5">
+          <label className="block text-xs text-white/40 uppercase tracking-wider mb-2">
+            Your city
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              value={cityInput}
+              onChange={handleCityTyping}
+              onFocus={handleCityFocus}
+              onBlur={hideCityDropdown}
+              placeholder="Type a city, e.g. Berlin"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-blue-500/50 transition-colors"
+            />
 
-      {/* Step 4 — Documents checklist (shows once a service is selected) */}
-      {selectedService && docs.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">
-              Step 4 — Documents to bring
-            </h2>
-            {stringDocs.length > 0 && (
-              <span className="text-xs text-gray-400">
-                {checkedCount} / {stringDocs.length} ready
-              </span>
+            {/* City dropdown — shows when user is typing */}
+            {showCityDropdown && citySuggestions.length > 0 && (
+              <ul className="absolute z-10 mt-1 w-full bg-[#141929] border border-white/10 rounded-xl overflow-hidden">
+                {citySuggestions.map(function (city) {
+                  return (
+                    <li
+                      key={city}
+                      onMouseDown={() => pickCity(city)}
+                      className="px-4 py-2.5 text-sm text-white/75 cursor-pointer hover:bg-blue-500/15 hover:text-white transition-colors"
+                    >
+                      {city}
+                    </li>
+                  );
+                })}
+              </ul>
             )}
           </div>
-          <p className="text-sm text-gray-500 mb-4">
-            Tick each item as you prepare it — don't show up without these!
-          </p>
-
-          <ul className="space-y-3">
-            {docs.map(function (doc, index) {
-              // Download link items look different from regular checklist items
-              if (typeof doc !== "string") {
-                return (
-                  <li key={index} className="pt-2 border-t border-gray-100">
-                    <a
-                      href={doc.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline font-medium"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                      {doc.label}
-                    </a>
-                  </li>
-                );
-              }
-
-              return (
-                <li
-                  key={index}
-                  onClick={() => toggleDoc(index)}
-                  className="flex items-start gap-3 cursor-pointer group"
-                >
-                  {/* Custom checkbox */}
-                  <div
-                    className={`mt-0.5 w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                      checkedDocs[index]
-                        ? "bg-green-500 border-green-500"
-                        : "border-gray-300 group-hover:border-green-400"
-                    }`}
-                  >
-                    {checkedDocs[index] && (
-                      <svg
-                        className="w-3 h-3 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                  <span
-                    className={`text-sm leading-snug ${
-                      checkedDocs[index]
-                        ? "line-through text-gray-400"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {doc}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-
-          {/* All checked celebration message */}
-          {checkedCount === stringDocs.length && stringDocs.length > 0 && (
-            <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700 font-medium text-center">
-              ✅ You're ready! Head to the Bürgeramt with confidence.
-            </div>
-          )}
         </div>
-      )}
 
-      {/* Step 5 — Book appointment (shows once office is selected) */}
-      {selectedOffice && cityBookingUrl && (
-        <div className="bg-blue-600 rounded-xl p-6 text-white mb-4">
-          <h2 className="font-semibold text-lg mb-1">Ready to book?</h2>
-          <p className="text-blue-100 text-sm mb-4">
+        {/* ── STEP 2: Service dropdown (only shows after city is picked) ── */}
+        {selectedCity && (
+          <div className="mb-5">
+            <label className="block text-xs text-white/40 uppercase tracking-wider mb-2">
+              What do you need to do?
+            </label>
+            <select
+              value={selectedService}
+              onChange={handleServiceChange}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors appearance-none"
+            >
+              <option value="" style={{ background: "#141929" }}>
+                — Choose a service —
+              </option>
+              <option value="Anmeldung" style={{ background: "#141929" }}>
+                Anmeldung — Register your address
+              </option>
+              <option value="Abmeldung" style={{ background: "#141929" }}>
+                Abmeldung — Deregister your address
+              </option>
+              <option value="Pass" style={{ background: "#141929" }}>
+                Pass / ID — Passport or ID card
+              </option>
+            </select>
+          </div>
+        )}
+
+        {/* ── STEP 3: Office list (only shows after service is picked) ── */}
+        {matchingOffices.length > 0 && (
+          <div className="mb-5">
+            <label className="block text-xs text-white/40 uppercase tracking-wider mb-2">
+              Offices in {selectedCity} that offer {selectedService}
+            </label>
+            <div className="flex flex-col gap-2">
+              {matchingOffices.map(function (office) {
+                var isSelected =
+                  selectedOffice && selectedOffice.id === office.id;
+                return (
+                  <div
+                    key={office.id}
+                    onClick={() => pickOffice(office)}
+                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                      isSelected
+                        ? "border-blue-500/40 bg-blue-500/10"
+                        : "border-white/8 bg-white/3 hover:border-white/15 hover:bg-white/5"
+                    }`}
+                  >
+                    <div className="text-sm font-medium text-white">
+                      {office.name}
+                    </div>
+                    <div className="text-xs text-white/40 mt-0.5">
+                      {office.address}
+                    </div>
+                    {/* Service tags */}
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {office.services.map(function (service) {
+                        return (
+                          <span
+                            key={service}
+                            className="text-xs bg-white/8 text-white/50 px-2 py-0.5 rounded-full"
+                          >
+                            {service}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Edge case: service picked but no offices match it in this city */}
+        {selectedService && matchingOffices.length === 0 && (
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-5">
+            <p className="text-amber-300/80 text-sm">
+              No offices in {selectedCity} offer {selectedService} in our list.
+              Try checking the city's official website directly.
+            </p>
+          </div>
+        )}
+
+        {/* ── STEP 4: Document checklist (shows after service is picked) ── */}
+        {selectedService && docs.length > 0 && (
+          <div>
+            <div className="border-t border-white/7 pt-5 mt-2">
+              {/* Header with counter */}
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs text-white/40 uppercase tracking-wider">
+                  Documents to bring
+                </label>
+                <span className="text-xs text-white/30">
+                  {checkedCount} / {checkableDocs.length} ready
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="h-0.5 bg-white/7 rounded-full mb-5 overflow-hidden">
+                <div
+                  className="h-full bg-emerald-400 rounded-full transition-all duration-300"
+                  style={{ width: progressPercent + "%" }}
+                />
+              </div>
+
+              {/* The checklist */}
+              <ul className="flex flex-col gap-3">
+                {docs.map(function (doc, index) {
+                  // If it has a URL it's a download link, not a checkbox
+                  if (doc.url) {
+                    return (
+                      <li key={index} className="pt-2 border-t border-white/6">
+                        <a
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 no-underline transition-colors"
+                        >
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M12 10v6m0 0-3-3m3 3 3-3m2 8H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
+                          </svg>
+                          {doc.text}
+                        </a>
+                      </li>
+                    );
+                  }
+
+                  // Regular checklist item
+                  var isTicked = checkedDocs[index] === true;
+                  return (
+                    <li
+                      key={index}
+                      onClick={() => toggleDocItem(index)}
+                      className="flex items-start gap-3 cursor-pointer group"
+                    >
+                      {/* Custom checkbox */}
+                      <div
+                        className={`mt-0.5 w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all ${
+                          isTicked
+                            ? "bg-emerald-500 border-emerald-500"
+                            : "border-white/20 group-hover:border-emerald-500/50"
+                        }`}
+                      >
+                        {isTicked && (
+                          <svg
+                            width="10"
+                            height="8"
+                            viewBox="0 0 10 8"
+                            fill="none"
+                          >
+                            <path
+                              d="M1 4l3 3 5-5"
+                              stroke="white"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </div>
+
+                      {/* Document text — strikes through when ticked */}
+                      <span
+                        className={`text-sm leading-snug transition-colors ${
+                          isTicked
+                            ? "line-through text-white/25"
+                            : "text-white/65"
+                        }`}
+                      >
+                        {doc.text}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {/* Celebration message when all items are ticked */}
+              {allDocsDone && (
+                <div className="mt-5 bg-emerald-500/10 border border-emerald-500/25 rounded-xl p-4 text-center">
+                  <p className="text-emerald-400 text-sm font-medium">
+                    You're ready — head to the Bürgeramt with confidence!
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Booking CTA (only appears after an office is selected) ── */}
+      {selectedOffice && bookingUrl && (
+        <div className="mt-4 bg-blue-600 rounded-2xl p-6">
+          <p
+            style={{ fontFamily: "'Syne', sans-serif" }}
+            className="text-white font-bold text-lg mb-1"
+          >
+            Ready to book?
+          </p>
+          <p className="text-blue-100/70 text-sm mb-4">
             Appointments for {selectedOffice.name} are booked through{" "}
-            {selectedCity}'s official portal. We'll take you there now.
+            {selectedCity}'s official portal.
           </p>
           <a
-            href={cityBookingUrl}
+            href={bookingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block bg-white text-blue-600 font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-blue-50 transition-colors"
+            className="inline-block bg-white text-blue-600 font-medium text-sm px-5 py-2.5 rounded-xl hover:bg-blue-50 transition-colors no-underline"
           >
             Book on the official {selectedCity} website →
           </a>
-          <p className="text-xs text-blue-200 mt-3">
-            Note: You'll be taken to the city's own booking system. Appointments
-            can be competitive — check back often if slots are full.
+          <p className="text-blue-200/40 text-xs mt-3">
+            Slots can go fast — check early in the morning when new ones drop.
           </p>
         </div>
       )}
+
+      {/* ── 14-day deadline reminder ── */}
+      <div className="mt-4 bg-amber-500/8 border border-amber-500/20 rounded-2xl p-5">
+        <p className="text-amber-300/80 text-sm leading-relaxed">
+          <strong className="text-amber-300 font-medium">Heads up:</strong> If
+          you just moved to a new address in Germany, you must Anmeldung within{" "}
+          <strong className="text-amber-300 font-medium">14 days</strong> of
+          moving in. Some Bürgerämter have long waits — don't leave it too late.
+        </p>
+      </div>
     </div>
   );
 }

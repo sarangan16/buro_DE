@@ -1,123 +1,138 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-const Navbar = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+function Navbar() {
+  // Controls whether the mobile menu is showing or not
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // useLocation gives us the current URL path so we can highlight the active link
   const location = useLocation();
 
-  // Helper to highlight the active link
-  function isActive(path) {
+  // A small helper — returns true if the given path is the current page
+  function isCurrentPage(path) {
     return location.pathname === path;
   }
 
-  const linkStyle =
-    "rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150";
-  const activeStyle = "bg-gray-900 text-white";
-  const inactiveStyle = "text-gray-300 hover:bg-gray-700 hover:text-white";
+  // Close the mobile menu whenever a link is clicked
+  function handleLinkClick() {
+    setMobileMenuOpen(false);
+  }
 
   return (
-    <nav className="bg-gray-800 shadow-md">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo + site name */}
-          <div className="flex items-center gap-3">
-            <span className="text-white font-bold text-lg tracking-tight">
-              🇩🇪 Bürgeramt Helper
-            </span>
-          </div>
+    <nav
+      style={{ fontFamily: "'Inter', sans-serif" }}
+      className="bg-[#0a0f1e] border-b border-white/7"
+    >
+      <div className="max-w-5xl mx-auto px-6 flex items-center justify-between h-16">
+        {/* Site logo / name */}
+        <Link
+          to="/"
+          className="no-underline"
+          style={{ fontFamily: "'Syne', sans-serif" }}
+        >
+          <span className="text-white font-bold text-base">
+            Bürger<span className="text-blue-400">Hilfe</span>
+          </span>
+        </Link>
 
-          {/* Desktop nav links */}
-          <div className="hidden sm:flex items-center gap-2">
-            <Link
-              to="/"
-              className={`${linkStyle} ${isActive("/") ? activeStyle : inactiveStyle}`}
-            >
-              Home
-            </Link>
-            <Link
-              to="/faq"
-              className={`${linkStyle} ${isActive("/faq") ? activeStyle : inactiveStyle}`}
-            >
-              FAQ
-            </Link>
-            <Link
-              to="/login"
-              className={`${linkStyle} ${isActive("/login") ? activeStyle : inactiveStyle}`}
-            >
-              Login
-            </Link>
-          </div>
-
-          {/* Mobile hamburger button */}
-          <div className="sm:hidden">
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="text-gray-400 hover:text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white"
-              aria-label="Toggle menu"
-            >
-              {/* show X when open, hamburger when closed */}
-              {mobileOpen ? (
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* mobile dropdown menu */}
-      {mobileOpen && (
-        <div className="sm:hidden bg-gray-700 px-4 pb-4 pt-2 space-y-1">
+        {/* Desktop navigation links — hidden on mobile */}
+        <div className="hidden sm:flex items-center gap-1">
           <Link
             to="/"
-            onClick={() => setMobileOpen(false)}
-            className={`block ${linkStyle} ${isActive("/") ? activeStyle : inactiveStyle}`}
+            className={`px-3 py-2 rounded-lg text-sm transition-colors no-underline ${
+              isCurrentPage("/")
+                ? "text-white bg-white/8"
+                : "text-white/40 hover:text-white hover:bg-white/5"
+            }`}
           >
             Home
           </Link>
           <Link
             to="/faq"
-            onClick={() => setMobileOpen(false)}
-            className={`block ${linkStyle} ${isActive("/faq") ? activeStyle : inactiveStyle}`}
+            className={`px-3 py-2 rounded-lg text-sm transition-colors no-underline ${
+              isCurrentPage("/faq")
+                ? "text-white bg-white/8"
+                : "text-white/40 hover:text-white hover:bg-white/5"
+            }`}
           >
             FAQ
           </Link>
           <Link
             to="/login"
-            onClick={() => setMobileOpen(false)}
-            className={`block ${linkStyle} ${isActive("/login") ? activeStyle : inactiveStyle}`}
+            className="ml-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors no-underline"
           >
-            Login
+            Log in
+          </Link>
+        </div>
+
+        {/* Mobile hamburger button — only visible on small screens */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="sm:hidden text-white/50 hover:text-white p-2 rounded-lg"
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? (
+            // X icon when menu is open
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          ) : (
+            // Hamburger icon when menu is closed
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* Mobile dropdown — slides in when hamburger is clicked */}
+      {mobileMenuOpen && (
+        <div className="sm:hidden border-t border-white/7 px-4 py-3 flex flex-col gap-1">
+          <Link
+            to="/"
+            onClick={handleLinkClick}
+            className={`px-3 py-2.5 rounded-lg text-sm no-underline ${
+              isCurrentPage("/") ? "text-white bg-white/8" : "text-white/50"
+            }`}
+          >
+            Home
+          </Link>
+          <Link
+            to="/faq"
+            onClick={handleLinkClick}
+            className={`px-3 py-2.5 rounded-lg text-sm no-underline ${
+              isCurrentPage("/faq") ? "text-white bg-white/8" : "text-white/50"
+            }`}
+          >
+            FAQ
+          </Link>
+          <Link
+            to="/login"
+            onClick={handleLinkClick}
+            className="px-3 py-2.5 rounded-lg text-sm text-blue-400 no-underline"
+          >
+            Log in
           </Link>
         </div>
       )}
     </nav>
   );
-};
+}
 
 export default Navbar;
