@@ -58,6 +58,16 @@ function Navbar() {
             FAQ
           </Link>
           <Link
+            to="/explain"
+            className={`px-3 py-2 rounded-lg text-sm transition-colors no-underline ${
+              isCurrentPage("/explain")
+                ? "text-white bg-white/8"
+                : "text-white/40 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            Letter Explainer
+          </Link>
+          <Link
             to="/login"
             className="ml-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors no-underline"
           >
@@ -122,6 +132,18 @@ function Navbar() {
           >
             FAQ
           </Link>
+          <Link
+            to="/explain"
+            onClick={handleLinkClick}
+            className={`px-3 py-2.5 rounded-lg text-sm no-underline ${
+              isCurrentPage("/explain")
+                ? "text-white bg-white/8"
+                : "text-white/50"
+            }`}
+          >
+            Letter Explainer
+          </Link>
+
           <Link
             to="/login"
             onClick={handleLinkClick}
