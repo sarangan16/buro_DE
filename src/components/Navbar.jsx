@@ -2,87 +2,90 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 function Navbar() {
-  // Controls whether the mobile menu is showing or not
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // useLocation gives us the current URL path so we can highlight the active link
   const location = useLocation();
 
-  // A small helper — returns true if the given path is the current page
   function isCurrentPage(path) {
     return location.pathname === path;
   }
 
-  // Close the mobile menu whenever a link is clicked
   function handleLinkClick() {
     setMobileMenuOpen(false);
   }
 
+  const navLinks = [
+    { to: "/", label: "Home" },
+    { to: "/explain", label: "Letter Explainer" },
+    { to: "/faq", label: "FAQ" },
+  ];
+
   return (
     <nav
       style={{ fontFamily: "'Inter', sans-serif" }}
-      className="bg-[#0a0f1e] border-b border-white/7"
+      className="bg-[#0a0f1e]/95 backdrop-blur-sm sticky top-0 z-50 border-b border-white/5"
     >
-      <div className="max-w-5xl mx-auto px-6 flex items-center justify-between h-16">
-        {/* Site logo / name */}
-        <Link
-          to="/"
-          className="no-underline"
-          style={{ fontFamily: "'Syne', sans-serif" }}
-        >
-          <span className="text-white font-bold text-base">
+      <div
+        className="max-w-6xl mx-auto px-8 flex items-center justify-between h-18"
+        style={{ height: "68px" }}
+      >
+        {/* Logo */}
+        <Link to="/" className="no-underline flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-blue-500 flex items-center justify-center">
+            <span
+              style={{ fontFamily: "'Syne', sans-serif" }}
+              className="text-white font-black text-sm"
+            >
+              B
+            </span>
+          </div>
+          <span
+            style={{ fontFamily: "'Syne', sans-serif" }}
+            className="text-white font-bold text-base tracking-tight"
+          >
             Bürger<span className="text-blue-400">Hilfe</span>
           </span>
         </Link>
 
-        {/* Desktop navigation links — hidden on mobile */}
-        <div className="hidden sm:flex items-center gap-1">
-          <Link
-            to="/"
-            className={`px-3 py-2 rounded-lg text-sm transition-colors no-underline ${
-              isCurrentPage("/")
-                ? "text-white bg-white/8"
-                : "text-white/40 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            Home
-          </Link>
-          <Link
-            to="/faq"
-            className={`px-3 py-2 rounded-lg text-sm transition-colors no-underline ${
-              isCurrentPage("/faq")
-                ? "text-white bg-white/8"
-                : "text-white/40 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            FAQ
-          </Link>
-          <Link
-            to="/explain"
-            className={`px-3 py-2 rounded-lg text-sm transition-colors no-underline ${
-              isCurrentPage("/explain")
-                ? "text-white bg-white/8"
-                : "text-white/40 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            Letter Explainer
-          </Link>
+        {/* Desktop links */}
+        <div className="hidden sm:flex items-center gap-6">
+          {navLinks.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className={`text-sm transition-colors no-underline ${
+                isCurrentPage(to)
+                  ? "text-white font-medium"
+                  : "text-white/45 hover:text-white"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="hidden sm:flex items-center gap-3">
           <Link
             to="/login"
-            className="ml-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors no-underline"
+            className="text-sm text-white/50 hover:text-white transition-colors no-underline"
           >
             Log in
           </Link>
+          <Link
+            to="/login"
+            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors no-underline"
+          >
+            Get started free
+          </Link>
         </div>
 
-        {/* Mobile hamburger button — only visible on small screens */}
+        {/* Mobile hamburger */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="sm:hidden text-white/50 hover:text-white p-2 rounded-lg"
+          className="sm:hidden text-white/50 hover:text-white p-2"
           aria-label="Toggle menu"
         >
           {mobileMenuOpen ? (
-            // X icon when menu is open
             <svg
               width="20"
               height="20"
@@ -95,7 +98,6 @@ function Navbar() {
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>
           ) : (
-            // Hamburger icon when menu is closed
             <svg
               width="20"
               height="20"
@@ -111,46 +113,32 @@ function Navbar() {
         </button>
       </div>
 
-      {/* Mobile dropdown — slides in when hamburger is clicked */}
+      {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="sm:hidden border-t border-white/7 px-4 py-3 flex flex-col gap-1">
-          <Link
-            to="/"
-            onClick={handleLinkClick}
-            className={`px-3 py-2.5 rounded-lg text-sm no-underline ${
-              isCurrentPage("/") ? "text-white bg-white/8" : "text-white/50"
-            }`}
-          >
-            Home
-          </Link>
-          <Link
-            to="/faq"
-            onClick={handleLinkClick}
-            className={`px-3 py-2.5 rounded-lg text-sm no-underline ${
-              isCurrentPage("/faq") ? "text-white bg-white/8" : "text-white/50"
-            }`}
-          >
-            FAQ
-          </Link>
-          <Link
-            to="/explain"
-            onClick={handleLinkClick}
-            className={`px-3 py-2.5 rounded-lg text-sm no-underline ${
-              isCurrentPage("/explain")
-                ? "text-white bg-white/8"
-                : "text-white/50"
-            }`}
-          >
-            Letter Explainer
-          </Link>
-
-          <Link
-            to="/login"
-            onClick={handleLinkClick}
-            className="px-3 py-2.5 rounded-lg text-sm text-blue-400 no-underline"
-          >
-            Log in
-          </Link>
+        <div className="sm:hidden border-t border-white/5 px-6 py-4 flex flex-col gap-1 bg-[#0a0f1e]">
+          {navLinks.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              onClick={handleLinkClick}
+              className={`px-3 py-3 rounded-lg text-sm no-underline transition-colors ${
+                isCurrentPage(to)
+                  ? "text-white bg-white/6"
+                  : "text-white/50 hover:text-white"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+          <div className="border-t border-white/5 mt-2 pt-3">
+            <Link
+              to="/login"
+              onClick={handleLinkClick}
+              className="block w-full text-center px-4 py-2.5 bg-blue-500 text-white text-sm font-medium rounded-lg no-underline"
+            >
+              Get started free
+            </Link>
+          </div>
         </div>
       )}
     </nav>
