@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { createWorker } from "tesseract.js";
 
 // ─────────────────────────────────────────────
 // CONSTANTS
@@ -35,8 +36,37 @@ function LetterExplainer() {
   const [language, setLanguage] = useState("English");
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOcrLoading, setIsOcrLoading] = useState(false);
   const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
 
+  // ── OCR: read text from uploaded image ──
+  async function handleFileUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsOcrLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const worker = await createWorker("deu+eng"); // German + English
+      const {
+        data: { text },
+      } = await worker.recognize(file);
+      await worker.terminate();
+      setLetterText(text.trim());
+    } catch {
+      setError(
+        "Could not read the image. Try a clearer photo or paste the text manually.",
+      );
+    }
+
+    setIsOcrLoading(false);
+    e.target.value = ""; // reset so same file can be re-uploaded
+  }
+
+  // ── Send letter text to AI ──
   async function handleExplain() {
     if (!letterText.trim() || isLoading) return;
 
@@ -98,8 +128,8 @@ function LetterExplainer() {
             <span className="text-amber-400">German letter?</span>
           </h1>
           <p className="text-white/40 text-sm leading-relaxed">
-            Paste it below and get a plain language explanation — what it means,
-            what you need to do, and by when.
+            Paste it, or photo/upload it — get a plain language explanation of
+            what it means and what you need to do.
           </p>
         </div>
 
@@ -119,10 +149,10 @@ function LetterExplainer() {
 
         {/* Main card */}
         <div className="bg-white/3 border border-white/10 rounded-2xl p-6 mb-4">
-          {/* Language toggle */}
+          {/* Top row: label + language toggle */}
           <div className="flex items-center justify-between mb-4">
             <label className="text-xs text-white/40 uppercase tracking-wider">
-              Paste your letter
+              Your letter
             </label>
             <div className="flex bg-white/5 border border-white/10 rounded-lg p-0.5 gap-0.5">
               {["English", "Deutsch"].map((lang) => (
@@ -141,12 +171,70 @@ function LetterExplainer() {
             </div>
           </div>
 
+          {/* Upload button */}
+          <div className="mb-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,.pdf"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isOcrLoading}
+              className="w-full flex items-center justify-center gap-2 border border-dashed border-white/15 hover:border-amber-500/40 bg-white/2 hover:bg-amber-500/5 rounded-xl py-3 text-sm text-white/40 hover:text-amber-300 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {isOcrLoading ? (
+                <>
+                  <span className="flex gap-1">
+                    {[0, 1, 2].map((i) => (
+                      <span
+                        key={i}
+                        className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"
+                        style={{
+                          animation: `bounce 1.2s ${i * 0.2}s infinite`,
+                        }}
+                      />
+                    ))}
+                  </span>
+                  Reading image...
+                </>
+              ) : (
+                <>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  Upload photo or PDF of letter
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex-1 h-px bg-white/7" />
+            <span className="text-xs text-white/20">or paste text</span>
+            <div className="flex-1 h-px bg-white/7" />
+          </div>
+
           {/* Textarea */}
           <textarea
             value={letterText}
             onChange={(e) => setLetterText(e.target.value)}
             placeholder="Paste the German letter text here..."
-            rows={10}
+            rows={8}
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 resize-none outline-none focus:border-blue-500/50 transition-colors leading-relaxed"
           />
 
@@ -154,7 +242,7 @@ function LetterExplainer() {
           <div className="flex gap-3 mt-4">
             <button
               onClick={handleExplain}
-              disabled={!letterText.trim() || isLoading}
+              disabled={!letterText.trim() || isLoading || isOcrLoading}
               className="flex-1 bg-amber-500 hover:bg-amber-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm font-medium py-3 rounded-xl transition-colors"
             >
               {isLoading ? "Explaining..." : "Explain this letter →"}
@@ -204,7 +292,7 @@ function LetterExplainer() {
                 Explanation
               </span>
             </div>
-            <div className="text-sm text-white/75 leading-relaxed whitespace-pre-wrap">
+            <div className="text-sm text-white/75 leading-relaxed">
               <FormattedResult text={result} />
             </div>
           </div>
