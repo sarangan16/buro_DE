@@ -1,9 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 
-// ─────────────────────────────────────────────
-// CONSTANTS
-// ─────────────────────────────────────────────
-
 const SYSTEM_PROMPT = `You are BürgerHilfe, a friendly expert assistant helping expats navigate German bureaucracy. You know everything about: Anmeldung, Abmeldung, Steuer-ID, Krankenkasse, Aufenthaltstitel, Rundfunkbeitrag, bank accounts, visa types, work permits, and all Bürgeramt processes.
 
 Rules:
@@ -21,102 +17,40 @@ const SUGGESTIONS = [
   "My passport is expiring soon",
 ];
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
-
-// Converts **bold** and newlines to JSX
 function FormattedMessage({ text }) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  const inline = parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={i}>{part.slice(2, -2)}</strong>;
-    }
-    // Render line breaks
-    return part.split("\n").map((line, j, arr) => (
-      <React.Fragment key={`${i}-${j}`}>
-        {line}
-        {j < arr.length - 1 && <br />}
-      </React.Fragment>
-    ));
-  });
-  return <span>{inline}</span>;
-}
-
-// ─────────────────────────────────────────────
-// SUB-COMPONENTS
-// ─────────────────────────────────────────────
-
-function TypingIndicator() {
   return (
-    <div className="flex gap-2.5 items-start">
-      <Avatar role="ai" />
-      <div className="bg-white/5 border border-white/8 rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1 items-center">
-        {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            className="w-1.5 h-1.5 rounded-full bg-white/30"
-            style={{ animation: `bounce 1.2s ${i * 0.2}s infinite` }}
-          />
-        ))}
-      </div>
-    </div>
+    <span>
+      {parts.map((part, i) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return <strong key={i}>{part.slice(2, -2)}</strong>;
+        }
+        return part.split("\n").map((line, j, arr) => (
+          <React.Fragment key={`${i}-${j}`}>
+            {line}
+            {j < arr.length - 1 && <br />}
+          </React.Fragment>
+        ));
+      })}
+    </span>
   );
 }
-
-function Avatar({ role }) {
-  return (
-    <div
-      className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-medium ${
-        role === "ai"
-          ? "bg-blue-500/15 border border-blue-500/25 text-blue-400"
-          : "bg-white/8 text-white/50"
-      }`}
-    >
-      {role === "ai" ? "B" : "You"}
-    </div>
-  );
-}
-
-function Message({ role, text }) {
-  const isUser = role === "user";
-  return (
-    <div
-      className={`flex gap-2.5 items-start ${isUser ? "flex-row-reverse" : ""}`}
-    >
-      <Avatar role={isUser ? "user" : "ai"} />
-      <div
-        className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-          isUser
-            ? "bg-blue-500 text-white rounded-tr-sm"
-            : "bg-white/5 border border-white/8 text-white/80 rounded-tl-sm"
-        }`}
-      >
-        <FormattedMessage text={text} />
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────
-// MAIN COMPONENT
-// ─────────────────────────────────────────────
 
 function AiCopilot() {
   const [messages, setMessages] = useState([]);
-  const [history, setHistory] = useState([]); // raw history for API
+  const [history, setHistory] = useState([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // Scroll to bottom whenever messages update
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages, isLoading]);
 
-  // Auto-resize textarea as user types
   function handleInputChange(e) {
     setInput(e.target.value);
     const el = textareaRef.current;
@@ -157,15 +91,10 @@ function AiCopilot() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: SYSTEM_PROMPT,
-          messages: newHistory,
-        }),
+        body: JSON.stringify({ system: SYSTEM_PROMPT, messages: newHistory }),
       });
-
       const data = await res.json();
       const reply = data.content?.[0]?.text || "Sorry, something went wrong.";
-
       setHistory((prev) => [...prev, { role: "assistant", content: reply }]);
       setMessages((prev) => [...prev, { role: "assistant", text: reply }]);
     } catch {
@@ -180,38 +109,114 @@ function AiCopilot() {
 
   return (
     <div
-      style={{ fontFamily: "'Inter', sans-serif", height: "520px" }}
-      className="bg-white/3 border border-white/10 rounded-2xl overflow-hidden flex flex-col"
+      style={{
+        fontFamily: "'DM Sans', sans-serif",
+        display: "flex",
+        flexDirection: "column",
+        height: "520px",
+      }}
     >
       {/* Header */}
-      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-white/7">
-        <span className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa] animate-pulse" />
-        <span className="text-sm font-semibold text-white/85">
+      <div
+        style={{
+          padding: "16px 24px",
+          borderBottom: "1px solid #f0f0ee",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        <div
+          style={{
+            width: "8px",
+            height: "8px",
+            borderRadius: "50%",
+            background: "#22c55e",
+          }}
+        />
+        <span style={{ fontSize: "14px", fontWeight: "600", color: "#0f0f0f" }}>
           BürgerHilfe Copilot
         </span>
-        <span className="text-xs text-white/25 ml-auto">Powered by Claude</span>
+        <span
+          style={{ fontSize: "12px", color: "#9ca3af", marginLeft: "auto" }}
+        >
+          Powered by AI
+        </span>
       </div>
 
-      {/* Message list */}
-      <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-3.5 scroll-smooth">
-        {/* Welcome message */}
-        <div className="flex gap-2.5 items-start">
-          <Avatar role="ai" />
+      {/* Messages */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: "24px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+        }}
+      >
+        {/* Welcome */}
+        <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+          <div
+            style={{
+              width: "28px",
+              height: "28px",
+              borderRadius: "50%",
+              background: "#1a1a1a",
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span
+              style={{ color: "white", fontSize: "11px", fontWeight: "700" }}
+            >
+              B
+            </span>
+          </div>
           <div>
-            <div className="bg-white/5 border border-white/8 rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm text-white/80 leading-relaxed max-w-[85%]">
+            <div
+              style={{
+                background: "#f9fafb",
+                border: "1px solid #f0f0ee",
+                borderRadius: "12px",
+                borderTopLeftRadius: "4px",
+                padding: "12px 16px",
+                fontSize: "14px",
+                color: "#374151",
+                lineHeight: "1.6",
+                maxWidth: "85%",
+              }}
+            >
               Hi! Tell me your situation — where you're from, what visa you
               have, what you need to sort out — and I'll give you a clear
               step-by-step plan.
             </div>
-
-            {/* Quick suggestion pills */}
             {showSuggestions && (
-              <div className="flex flex-wrap gap-1.5 mt-2">
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "6px",
+                  marginTop: "10px",
+                }}
+              >
                 {SUGGESTIONS.map((s) => (
                   <button
                     key={s}
                     onClick={() => handleSuggestion(s)}
-                    className="bg-blue-500/10 border border-blue-500/25 text-blue-300 text-xs px-3 py-1.5 rounded-full hover:bg-blue-500/20 transition-colors"
+                    style={{
+                      background: "white",
+                      border: "1px solid #e5e7eb",
+                      color: "#374151",
+                      fontSize: "12px",
+                      padding: "6px 12px",
+                      borderRadius: "100px",
+                      cursor: "pointer",
+                      fontFamily: "'DM Sans', sans-serif",
+                      transition: "border-color 0.15s",
+                    }}
                   >
                     {s}
                   </button>
@@ -221,19 +226,126 @@ function AiCopilot() {
           </div>
         </div>
 
-        {/* Conversation messages */}
-        {messages.map((msg, i) => (
-          <Message key={i} role={msg.role} text={msg.text} />
-        ))}
+        {/* Messages */}
+        {messages.map((msg, i) => {
+          const isUser = msg.role === "user";
+          return (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                gap: "10px",
+                alignItems: "flex-start",
+                flexDirection: isUser ? "row-reverse" : "row",
+              }}
+            >
+              <div
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: isUser ? "#eff6ff" : "#1a1a1a",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    color: isUser ? "#2563eb" : "white",
+                  }}
+                >
+                  {isUser ? "U" : "B"}
+                </span>
+              </div>
+              <div
+                style={{
+                  maxWidth: "85%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  fontSize: "14px",
+                  lineHeight: "1.6",
+                  borderTopRightRadius: isUser ? "4px" : "12px",
+                  borderTopLeftRadius: isUser ? "12px" : "4px",
+                  background: isUser ? "#1a1a1a" : "#f9fafb",
+                  border: isUser ? "none" : "1px solid #f0f0ee",
+                  color: isUser ? "white" : "#374151",
+                }}
+              >
+                <FormattedMessage text={msg.text} />
+              </div>
+            </div>
+          );
+        })}
 
-        {/* Typing indicator */}
-        {isLoading && <TypingIndicator />}
+        {/* Typing */}
+        {isLoading && (
+          <div
+            style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}
+          >
+            <div
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "50%",
+                background: "#1a1a1a",
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <span
+                style={{ color: "white", fontSize: "11px", fontWeight: "700" }}
+              >
+                B
+              </span>
+            </div>
+            <div
+              style={{
+                background: "#f9fafb",
+                border: "1px solid #f0f0ee",
+                borderRadius: "12px",
+                borderTopLeftRadius: "4px",
+                padding: "14px 16px",
+                display: "flex",
+                gap: "4px",
+                alignItems: "center",
+              }}
+            >
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  style={{
+                    width: "6px",
+                    height: "6px",
+                    borderRadius: "50%",
+                    background: "#d1d5db",
+                    display: "inline-block",
+                    animation: `bounce 1.2s ${i * 0.2}s infinite`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input row */}
-      <div className="px-4 py-3 border-t border-white/7 flex gap-2.5 items-end">
+      {/* Input */}
+      <div
+        style={{
+          padding: "12px 16px",
+          borderTop: "1px solid #f0f0ee",
+          display: "flex",
+          gap: "10px",
+          alignItems: "flex-end",
+        }}
+      >
         <textarea
           ref={textareaRef}
           value={input}
@@ -241,20 +353,45 @@ function AiCopilot() {
           onKeyDown={handleKeyDown}
           placeholder="Ask anything about German bureaucracy..."
           rows={1}
-          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 resize-none outline-none focus:border-blue-500/50 transition-colors leading-relaxed"
-          style={{ minHeight: "42px", maxHeight: "120px" }}
+          style={{
+            flex: 1,
+            border: "1px solid #e5e7eb",
+            borderRadius: "10px",
+            padding: "10px 14px",
+            fontSize: "14px",
+            color: "#1a1a1a",
+            resize: "none",
+            outline: "none",
+            fontFamily: "'DM Sans', sans-serif",
+            minHeight: "42px",
+            maxHeight: "120px",
+            lineHeight: "1.5",
+            background: "#fafaf8",
+          }}
         />
         <button
           onClick={() => send(input)}
           disabled={isLoading || !input.trim()}
-          className="w-9 h-9 rounded-xl bg-blue-500 hover:bg-blue-600 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 transition-colors"
+          style={{
+            width: "38px",
+            height: "38px",
+            borderRadius: "10px",
+            background: input.trim() ? "#1a1a1a" : "#f4f4f3",
+            border: "none",
+            cursor: input.trim() ? "pointer" : "not-allowed",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            transition: "background 0.15s",
+          }}
         >
           <svg
             width="15"
             height="15"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="white"
+            stroke={input.trim() ? "white" : "#9ca3af"}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -265,7 +402,6 @@ function AiCopilot() {
         </button>
       </div>
 
-      {/* CSS for typing bounce — injected once */}
       <style>{`
         @keyframes bounce {
           0%, 60%, 100% { transform: translateY(0); }

@@ -1,102 +1,195 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Appointments from "../components/Appointments";
 import AiCopilot from "../components/AiCopilot";
-import { Link } from "react-router-dom";
 
-// ── Trust stats shown in hero ──
-const STATS = [
-  { value: "6 cities", label: "covered" },
-  { value: "3 min", label: "avg. time saved" },
-  { value: "Free", label: "always" },
-];
-
-// ── Service cards ──
 const SERVICES = [
   {
     emoji: "📋",
-    color: "bg-blue-500/15",
     title: "Anmeldung",
     desc: "Register your address within 14 days of moving in",
+    color: "#eff6ff",
+    border: "#bfdbfe",
   },
   {
     emoji: "📤",
-    color: "bg-emerald-500/15",
     title: "Abmeldung",
-    desc: "Deregister when leaving Germany",
+    desc: "Deregister when leaving Germany for good",
+    color: "#f0fdf4",
+    border: "#bbf7d0",
   },
   {
     emoji: "🛂",
-    color: "bg-amber-500/15",
     title: "Pass / ID",
-    desc: "Renew or apply for a passport or national ID",
+    desc: "Renew or apply for a passport or national ID card",
+    color: "#fffbeb",
+    border: "#fde68a",
   },
+];
+
+const TRUST = [
+  { value: "6", label: "Cities covered" },
+  { value: "3", label: "Services supported" },
+  { value: "100%", label: "Free to use" },
 ];
 
 function Home() {
   function scrollToTool() {
-    document
-      .getElementById("tool-section")
-      ?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById("tool-section");
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
   }
-
   return (
     <div
-      style={{ fontFamily: "'Inter', sans-serif" }}
-      className="bg-[#0a0f1e] min-h-screen text-white"
+      style={{
+        fontFamily: "'DM Sans', sans-serif",
+        background: "#fafaf8",
+        minHeight: "100vh",
+        color: "#1a1a1a",
+      }}
     >
       {/* ── HERO ── */}
-      <div className="max-w-4xl mx-auto px-8 pt-24 pb-16">
-        <div className="max-w-2xl">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-1.5 mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block" />
-            <span className="text-xs text-blue-300 tracking-wide">
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "88px 32px 80px",
+        }}
+        id="hero-sec"
+      >
+        <div style={{ maxWidth: "640px" }}>
+          {/* Eyebrow */}
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "#eff6ff",
+              border: "1px solid #bfdbfe",
+              borderRadius: "100px",
+              padding: "5px 14px",
+              marginBottom: "28px",
+            }}
+          >
+            <div
+              style={{
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                background: "#2563eb",
+              }}
+            />
+            <span
+              style={{
+                fontSize: "12px",
+                color: "#1d4ed8",
+                fontWeight: "500",
+                letterSpacing: "0.02em",
+              }}
+            >
               Built for expats in Germany
             </span>
           </div>
 
           {/* Headline */}
           <h1
-            style={{ fontFamily: "'Syne', sans-serif" }}
-            className="text-6xl font-extrabold tracking-tight leading-[1.08] mb-6"
+            style={{
+              fontSize: "clamp(42px, 6vw, 62px)",
+              fontWeight: "800",
+              lineHeight: "1.05",
+              letterSpacing: "-1.5px",
+              color: "#0f0f0f",
+              marginBottom: "24px",
+            }}
           >
-            German bureaucracy,{" "}
-            <span style={{ color: "#5b8fff" }}>finally simple</span>
+            German bureaucracy,
+            <br />
+            <span style={{ color: "#2563eb" }}>finally simple.</span>
           </h1>
 
-          <p className="text-white/50 text-lg leading-relaxed mb-10 max-w-xl">
-            Find your nearest Bürgeramt, know exactly what to bring, and get a
-            step-by-step plan — all in one place. No more Googling at midnight.
+          <p
+            style={{
+              fontSize: "18px",
+              color: "#6b7280",
+              lineHeight: "1.7",
+              marginBottom: "40px",
+              maxWidth: "480px",
+            }}
+          >
+            Find your nearest Bürgeramt, know exactly what to bring, and get
+            step-by-step guidance — all in one place. No more Googling at
+            midnight.
           </p>
 
           {/* CTAs */}
-          <div className="flex items-center gap-4 flex-wrap mb-16">
+          <div
+            style={{
+              display: "flex",
+              gap: "12px",
+              flexWrap: "wrap",
+              alignItems: "center",
+              marginBottom: "64px",
+            }}
+          >
             <button
               onClick={scrollToTool}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-7 py-3.5 rounded-xl transition-colors text-sm"
+              style={{
+                background: "#1a1a1a",
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "15px",
+                fontWeight: "600",
+                padding: "13px 28px",
+                borderRadius: "10px",
+                fontFamily: "'DM Sans', sans-serif",
+                transition: "opacity 0.15s",
+              }}
             >
               Get started free →
             </button>
             <Link
               to="/explain"
-              className="text-white/50 hover:text-white text-sm transition-colors no-underline flex items-center gap-1.5"
+              style={{
+                textDecoration: "none",
+                fontSize: "15px",
+                color: "#6b7280",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
             >
-              <span>Got a confusing letter?</span>
-              <span className="text-blue-400">Explain it →</span>
+              Got a confusing letter?
+              <span style={{ color: "#2563eb" }}>Explain it →</span>
             </Link>
           </div>
 
-          {/* Trust stats */}
-          <div className="flex items-center gap-8 flex-wrap">
-            {STATS.map(({ value, label }) => (
+          {/* Trust numbers */}
+          <div style={{ display: "flex", gap: "40px", flexWrap: "wrap" }}>
+            {TRUST.map(({ value, label }) => (
               <div key={label}>
                 <div
-                  style={{ fontFamily: "'Syne', sans-serif" }}
-                  className="text-xl font-bold text-white"
+                  style={{
+                    fontSize: "28px",
+                    fontWeight: "800",
+                    color: "#0f0f0f",
+                    letterSpacing: "-0.5px",
+                  }}
                 >
                   {value}
                 </div>
-                <div className="text-xs text-white/35 mt-0.5">{label}</div>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    color: "#9ca3af",
+                    marginTop: "2px",
+                  }}
+                >
+                  {label}
+                </div>
               </div>
             ))}
           </div>
@@ -104,58 +197,222 @@ function Home() {
       </div>
 
       {/* ── SERVICES ── */}
-      <div className="max-w-4xl mx-auto px-8 mb-20">
-        <p className="text-xs text-white/30 uppercase tracking-widest mb-5">
-          What do you need?
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {SERVICES.map(({ emoji, color, title, desc }) => (
-            <div
-              key={title}
-              onClick={scrollToTool}
-              className="group bg-white/[0.03] hover:bg-white/[0.06] border border-white/8 hover:border-blue-500/25 rounded-2xl p-6 cursor-pointer transition-all"
-            >
+      <div
+        style={{
+          background: "white",
+          borderTop: "1px solid #e8e8e6",
+          borderBottom: "1px solid #e8e8e6",
+        }}
+      >
+        <div
+          style={{ maxWidth: "1100px", margin: "0 auto", padding: "64px 32px" }}
+        >
+          <p
+            style={{
+              fontSize: "12px",
+              fontWeight: "600",
+              color: "#9ca3af",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginBottom: "32px",
+            }}
+          >
+            What do you need to do?
+          </p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: "16px",
+            }}
+          >
+            {SERVICES.map(({ emoji, title, desc, color, border }) => (
               <div
-                className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center text-lg mb-4`}
+                key={title}
+                onClick={scrollToTool}
+                style={{
+                  background: color,
+                  border: `1px solid ${border}`,
+                  borderRadius: "12px",
+                  padding: "24px",
+                  cursor: "pointer",
+                  transition: "transform 0.15s, box-shadow 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 24px rgba(0,0,0,0.06)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
               >
-                {emoji}
+                <div style={{ fontSize: "28px", marginBottom: "14px" }}>
+                  {emoji}
+                </div>
+                <div
+                  style={{
+                    fontWeight: "700",
+                    fontSize: "16px",
+                    color: "#0f0f0f",
+                    marginBottom: "6px",
+                  }}
+                >
+                  {title}
+                </div>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    color: "#6b7280",
+                    lineHeight: "1.6",
+                  }}
+                >
+                  {desc}
+                </div>
               </div>
-              <div
-                style={{ fontFamily: "'Syne', sans-serif" }}
-                className="text-white font-bold mb-1.5"
-              >
-                {title}
-              </div>
-              <div className="text-sm text-white/35 leading-snug">{desc}</div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── DIVIDER ── */}
-      <div className="max-w-4xl mx-auto px-8 mb-12">
-        <div className="border-t border-white/5" />
+      {/* ── TOOL SECTION ── */}
+      <div
+        id="tool-section"
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "72px 32px 48px",
+          scrollMarginTop: "80px",
+        }}
+      >
+        <div style={{ marginBottom: "40px" }}>
+          <p
+            style={{
+              fontSize: "12px",
+              fontWeight: "600",
+              color: "#9ca3af",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginBottom: "8px",
+            }}
+          >
+            Bürgeramt Finder
+          </p>
+          <h2
+            style={{
+              fontSize: "28px",
+              fontWeight: "800",
+              letterSpacing: "-0.5px",
+              color: "#0f0f0f",
+              marginBottom: "8px",
+            }}
+          >
+            Find your office in seconds
+          </h2>
+          <p style={{ fontSize: "15px", color: "#6b7280" }}>
+            Select your city, pick your service, and we'll show you exactly
+            where to go.
+          </p>
+        </div>
+        <div
+          style={{
+            background: "white",
+            border: "1px solid #e8e8e6",
+            borderRadius: "16px",
+            overflow: "hidden",
+          }}
+        >
+          <Appointments />
+        </div>
       </div>
 
-      {/* ── MAIN TOOL ── */}
-      <div id="tool-section" className="max-w-4xl mx-auto px-8 pb-12">
-        <p className="text-xs text-white/30 uppercase tracking-widest mb-5">
-          Bürgeramt finder
-        </p>
-        <Appointments />
-      </div>
-
-      {/* ── COPILOT ── */}
-      <div className="max-w-4xl mx-auto px-8 pb-24">
-        <div className="mb-5">
-          <p className="text-xs text-white/30 uppercase tracking-widest mb-1">
+      {/* ── COPILOT SECTION ── */}
+      <div
+        style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 32px 96px" }}
+      >
+        <div style={{ marginBottom: "40px" }}>
+          <p
+            style={{
+              fontSize: "12px",
+              fontWeight: "600",
+              color: "#9ca3af",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginBottom: "8px",
+            }}
+          >
             AI Copilot
           </p>
-          <p className="text-white/40 text-sm">
-            Ask anything — visa questions, tax IDs, what to do first
+          <h2
+            style={{
+              fontSize: "28px",
+              fontWeight: "800",
+              letterSpacing: "-0.5px",
+              color: "#0f0f0f",
+              marginBottom: "8px",
+            }}
+          >
+            Ask anything
+          </h2>
+          <p style={{ fontSize: "15px", color: "#6b7280" }}>
+            Visa questions, tax IDs, what to do first — get a clear answer in
+            seconds.
           </p>
         </div>
-        <AiCopilot />
+        <div
+          style={{
+            background: "white",
+            border: "1px solid #e8e8e6",
+            borderRadius: "16px",
+            overflow: "hidden",
+          }}
+        >
+          <AiCopilot />
+        </div>
+      </div>
+
+      {/* ── FOOTER ── */}
+      <div style={{ borderTop: "1px solid #e8e8e6", background: "white" }}>
+        <div
+          style={{
+            maxWidth: "1100px",
+            margin: "0 auto",
+            padding: "32px 32px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "16px",
+          }}
+        >
+          <span
+            style={{ fontSize: "14px", fontWeight: "700", color: "#1a1a1a" }}
+          >
+            Bürger<span style={{ color: "#2563eb" }}>Hilfe</span>
+          </span>
+          <span style={{ fontSize: "13px", color: "#9ca3af" }}>
+            Built for expats. Free forever.
+          </span>
+          <div style={{ display: "flex", gap: "24px" }}>
+            {[
+              { to: "/faq", label: "FAQ" },
+              { to: "/explain", label: "Letter Explainer" },
+            ].map(({ to, label }) => (
+              <Link
+                key={to}
+                to={to}
+                style={{
+                  fontSize: "13px",
+                  color: "#6b7280",
+                  textDecoration: "none",
+                }}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
