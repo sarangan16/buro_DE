@@ -1,31 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Appointments from "../components/Appointments";
 import AiCopilot from "../components/AiCopilot";
-
-const SERVICES = [
-  {
-    emoji: "📋",
-    title: "Anmeldung",
-    desc: "Register your address within 14 days of moving in",
-    color: "#eff6ff",
-    border: "#bfdbfe",
-  },
-  {
-    emoji: "📤",
-    title: "Abmeldung",
-    desc: "Deregister when leaving Germany for good",
-    color: "#f0fdf4",
-    border: "#bbf7d0",
-  },
-  {
-    emoji: "🛂",
-    title: "Pass / ID",
-    desc: "Renew or apply for a passport or national ID card",
-    color: "#fffbeb",
-    border: "#fde68a",
-  },
-];
+import LetterExplainer from "./LetterExplainer";
 
 const TRUST = [
   { value: "6", label: "Cities covered" },
@@ -33,352 +10,216 @@ const TRUST = [
   { value: "100%", label: "Free to use" },
 ];
 
+const TABS = [
+  { id: "finder", label: "Find Bürgeramt" },
+  { id: "ai", label: "AI Copilot" },
+  { id: "letter", label: "Letter Explainer" },
+];
+
 function Home() {
-  function scrollToTool() {
-    const el = document.getElementById("tool-section");
-    if (el) {
-      const top = el.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top, behavior: "smooth" });
-    }
-  }
+  const [activeTab, setActiveTab] = useState("finder");
+
   return (
     <div
       style={{
         fontFamily: "'DM Sans', sans-serif",
-        background: "#fafaf8",
+        background: "#faf8f4",
         minHeight: "100vh",
-        color: "#1a1a1a",
+        color: "#1a1612",
       }}
     >
       {/* ── HERO ── */}
       <div
         style={{
-          maxWidth: "1100px",
+          maxWidth: "1200px",
           margin: "0 auto",
-          padding: "88px 32px 80px",
+          padding: "100px 40px 80px",
+          borderBottom: "1px solid rgba(30,25,20,0.1)",
         }}
-        id="hero-sec"
       >
-        <div style={{ maxWidth: "640px" }}>
-          {/* Eyebrow */}
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              background: "#eff6ff",
-              border: "1px solid #bfdbfe",
-              borderRadius: "100px",
-              padding: "5px 14px",
-              marginBottom: "28px",
-            }}
-          >
-            <div
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "80px",
+            alignItems: "end",
+          }}
+          className="hero-grid"
+        >
+          {/* Left */}
+          <div>
+            <p
               style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                background: "#2563eb",
-              }}
-            />
-            <span
-              style={{
-                fontSize: "12px",
-                color: "#1d4ed8",
-                fontWeight: "500",
-                letterSpacing: "0.02em",
+                fontSize: "11px",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: "rgba(30,25,20,0.4)",
+                marginBottom: "32px",
+                fontWeight: "400",
               }}
             >
               Built for expats in Germany
-            </span>
-          </div>
+            </p>
 
-          {/* Headline */}
-          <h1
-            style={{
-              fontSize: "clamp(42px, 6vw, 62px)",
-              fontWeight: "800",
-              lineHeight: "1.05",
-              letterSpacing: "-1.5px",
-              color: "#0f0f0f",
-              marginBottom: "24px",
-            }}
-          >
-            German bureaucracy,
-            <br />
-            <span style={{ color: "#2563eb" }}>finally simple.</span>
-          </h1>
-
-          <p
-            style={{
-              fontSize: "18px",
-              color: "#6b7280",
-              lineHeight: "1.7",
-              marginBottom: "40px",
-              maxWidth: "480px",
-            }}
-          >
-            Find your nearest Bürgeramt, know exactly what to bring, and get
-            step-by-step guidance — all in one place. No more Googling at
-            midnight.
-          </p>
-
-          {/* CTAs */}
-          <div
-            style={{
-              display: "flex",
-              gap: "12px",
-              flexWrap: "wrap",
-              alignItems: "center",
-              marginBottom: "64px",
-            }}
-          >
-            <button
-              onClick={scrollToTool}
+            <h1
               style={{
-                background: "#1a1a1a",
-                color: "white",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "15px",
-                fontWeight: "600",
-                padding: "13px 28px",
-                borderRadius: "10px",
-                fontFamily: "'DM Sans', sans-serif",
-                transition: "opacity 0.15s",
-              }}
-            >
-              Get started free →
-            </button>
-            <Link
-              to="/explain"
-              style={{
-                textDecoration: "none",
-                fontSize: "15px",
-                color: "#6b7280",
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontSize: "clamp(48px, 6vw, 76px)",
                 fontWeight: "500",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
+                lineHeight: "1.0",
+                letterSpacing: "-0.02em",
+                color: "#1a1612",
+                margin: "0",
               }}
             >
-              Got a confusing letter?
-              <span style={{ color: "#2563eb" }}>Explain it →</span>
-            </Link>
-          </div>
-
-          {/* Trust numbers */}
-          <div style={{ display: "flex", gap: "40px", flexWrap: "wrap" }}>
-            {TRUST.map(({ value, label }) => (
-              <div key={label}>
-                <div
-                  style={{
-                    fontSize: "28px",
-                    fontWeight: "800",
-                    color: "#0f0f0f",
-                    letterSpacing: "-0.5px",
-                  }}
-                >
-                  {value}
-                </div>
-                <div
-                  style={{
-                    fontSize: "13px",
-                    color: "#9ca3af",
-                    marginTop: "2px",
-                  }}
-                >
-                  {label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── SERVICES ── */}
-      <div
-        style={{
-          background: "white",
-          borderTop: "1px solid #e8e8e6",
-          borderBottom: "1px solid #e8e8e6",
-        }}
-      >
-        <div
-          style={{ maxWidth: "1100px", margin: "0 auto", padding: "64px 32px" }}
-        >
-          <p
-            style={{
-              fontSize: "12px",
-              fontWeight: "600",
-              color: "#9ca3af",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              marginBottom: "32px",
-            }}
-          >
-            What do you need to do?
-          </p>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-              gap: "16px",
-            }}
-          >
-            {SERVICES.map(({ emoji, title, desc, color, border }) => (
-              <div
-                key={title}
-                onClick={scrollToTool}
+              German
+              <br />
+              bureaucracy,
+              <br />
+              <em
                 style={{
-                  background: color,
-                  border: `1px solid ${border}`,
-                  borderRadius: "12px",
-                  padding: "24px",
-                  cursor: "pointer",
-                  transition: "transform 0.15s, box-shadow 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 8px 24px rgba(0,0,0,0.06)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
+                  fontStyle: "italic",
+                  color: "rgba(30,25,20,0.35)",
+                  fontWeight: "300",
                 }}
               >
-                <div style={{ fontSize: "28px", marginBottom: "14px" }}>
-                  {emoji}
-                </div>
+                finally simple.
+              </em>
+            </h1>
+          </div>
+
+          {/* Right */}
+          <div style={{ paddingBottom: "8px" }}>
+            <p
+              style={{
+                fontSize: "16px",
+                color: "rgba(30,25,20,0.55)",
+                lineHeight: "1.75",
+                marginBottom: "48px",
+                fontWeight: "300",
+              }}
+            >
+              Find your nearest Bürgeramt, decode confusing letters, and get
+              step-by-step AI guidance — all in one place.
+            </p>
+
+            {/* Trust numbers */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                borderTop: "1px solid rgba(30,25,20,0.1)",
+                paddingTop: "32px",
+              }}
+            >
+              {TRUST.map(({ value, label }, i) => (
                 <div
+                  key={label}
                   style={{
-                    fontWeight: "700",
-                    fontSize: "16px",
-                    color: "#0f0f0f",
-                    marginBottom: "6px",
+                    paddingRight: "24px",
+                    borderRight:
+                      i < TRUST.length - 1
+                        ? "1px solid rgba(30,25,20,0.1)"
+                        : "none",
+                    paddingLeft: i > 0 ? "24px" : "0",
                   }}
                 >
-                  {title}
+                  <div
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: "36px",
+                      fontWeight: "500",
+                      color: "#1a1612",
+                      letterSpacing: "-0.02em",
+                      lineHeight: "1",
+                    }}
+                  >
+                    {value}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: "rgba(30,25,20,0.35)",
+                      marginTop: "6px",
+                      fontWeight: "400",
+                    }}
+                  >
+                    {label}
+                  </div>
                 </div>
-                <div
-                  style={{
-                    fontSize: "13px",
-                    color: "#6b7280",
-                    lineHeight: "1.6",
-                  }}
-                >
-                  {desc}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── TOOL SECTION ── */}
+      {/* ── TABS ── */}
       <div
-        id="tool-section"
         style={{
-          maxWidth: "1100px",
+          maxWidth: "1200px",
           margin: "0 auto",
-          padding: "72px 32px 48px",
-          scrollMarginTop: "80px",
+          padding: "64px 40px 100px",
         }}
       >
-        <div style={{ marginBottom: "40px" }}>
-          <p
-            style={{
-              fontSize: "12px",
-              fontWeight: "600",
-              color: "#9ca3af",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              marginBottom: "8px",
-            }}
-          >
-            Bürgeramt Finder
-          </p>
-          <h2
-            style={{
-              fontSize: "28px",
-              fontWeight: "800",
-              letterSpacing: "-0.5px",
-              color: "#0f0f0f",
-              marginBottom: "8px",
-            }}
-          >
-            Find your office in seconds
-          </h2>
-          <p style={{ fontSize: "15px", color: "#6b7280" }}>
-            Select your city, pick your service, and we'll show you exactly
-            where to go.
-          </p>
-        </div>
+        {/* Tab bar */}
         <div
           style={{
-            background: "white",
-            border: "1px solid #e8e8e6",
-            borderRadius: "16px",
-            overflow: "hidden",
+            display: "flex",
+            borderBottom: "1px solid rgba(30,25,20,0.1)",
+            marginBottom: "48px",
           }}
         >
-          <Appointments />
+          {TABS.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              style={{
+                padding: "12px 28px 14px",
+                border: "none",
+                borderBottom:
+                  activeTab === id
+                    ? "1px solid #1a1612"
+                    : "1px solid transparent",
+                cursor: "pointer",
+                fontSize: "12px",
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: "400",
+                letterSpacing: "0.09em",
+                textTransform: "uppercase",
+                marginBottom: "-1px",
+                transition: "all 0.2s",
+                background: "transparent",
+                color: activeTab === id ? "#1a1612" : "rgba(30,25,20,0.35)",
+              }}
+            >
+              {label}
+            </button>
+          ))}
         </div>
-      </div>
 
-      {/* ── COPILOT SECTION ── */}
-      <div
-        style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 32px 96px" }}
-      >
-        <div style={{ marginBottom: "40px" }}>
-          <p
-            style={{
-              fontSize: "12px",
-              fontWeight: "600",
-              color: "#9ca3af",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              marginBottom: "8px",
-            }}
-          >
-            AI Copilot
-          </p>
-          <h2
-            style={{
-              fontSize: "28px",
-              fontWeight: "800",
-              letterSpacing: "-0.5px",
-              color: "#0f0f0f",
-              marginBottom: "8px",
-            }}
-          >
-            Ask anything
-          </h2>
-          <p style={{ fontSize: "15px", color: "#6b7280" }}>
-            Visa questions, tax IDs, what to do first — get a clear answer in
-            seconds.
-          </p>
-        </div>
+        {/* Tab content */}
         <div
           style={{
-            background: "white",
-            border: "1px solid #e8e8e6",
-            borderRadius: "16px",
+            border: "1px solid rgba(30,25,20,0.1)",
+            minHeight: "500px",
             overflow: "hidden",
           }}
         >
-          <AiCopilot />
+          {activeTab === "finder" && <Appointments />}
+          {activeTab === "ai" && <AiCopilot />}
+          {activeTab === "letter" && <LetterExplainer embedded />}
         </div>
       </div>
 
       {/* ── FOOTER ── */}
-      <div style={{ borderTop: "1px solid #e8e8e6", background: "white" }}>
+      <div style={{ borderTop: "1px solid rgba(30,25,20,0.1)" }}>
         <div
           style={{
-            maxWidth: "1100px",
+            maxWidth: "1200px",
             margin: "0 auto",
-            padding: "32px 32px",
+            padding: "28px 40px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -387,33 +228,47 @@ function Home() {
           }}
         >
           <span
-            style={{ fontSize: "14px", fontWeight: "700", color: "#1a1a1a" }}
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "17px",
+              fontWeight: "600",
+              color: "#1a1612",
+              letterSpacing: "0.02em",
+            }}
           >
-            Bürger<span style={{ color: "#2563eb" }}>Hilfe</span>
+            Büro
+            <span style={{ color: "rgba(30,25,20,0.3)", fontWeight: "300" }}>
+              Help
+            </span>
           </span>
-          <span style={{ fontSize: "13px", color: "#9ca3af" }}>
-            Built for expats. Free forever.
-          </span>
-          <div style={{ display: "flex", gap: "24px" }}>
-            {[
-              { to: "/faq", label: "FAQ" },
-              { to: "/explain", label: "Letter Explainer" },
-            ].map(({ to, label }) => (
-              <Link
-                key={to}
-                to={to}
-                style={{
-                  fontSize: "13px",
-                  color: "#6b7280",
-                  textDecoration: "none",
-                }}
-              >
-                {label}
-              </Link>
-            ))}
+
+          <div style={{ display: "flex", gap: "28px" }}>
+            <span
+              style={{
+                fontSize: "11px",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "rgba(30,25,20,0.3)",
+              }}
+            >
+              <a href="https://sarangan16.github.io/sarangan/" target="_blank">
+                developed by - Raavn
+              </a>
+            </span>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap');
+
+        @media (max-width: 768px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 40px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
