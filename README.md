@@ -1,30 +1,49 @@
-Bürgeramt Appointment Finder (Still developing)
+# Briefklar
 
-Streamline Your German Bureaucracy — all in one place!
-Easily find your nearest Bürgeramt, view available appointment slots, check required documents, and download official forms for Anmeldung, Abmeldung, and Pass services.
+Upload a German bureaucratic letter and get a plain-English explanation in seconds.
 
+Built for expats living in Germany who receive official letters they can't fully understand.
 
-Features 
+## What it does
 
-- City Autocomplete — Type your city name to get quick suggestions (Berlin, Hamburg, Munich, etc.)
-- Service Selector — Choose from Anmeldung, Abmeldung, or Pass
-- Office Filtering — Automatically shows only offices offering your selected service
-- Appointment Booking — View available slots for each office
-- Documents & Form Downloads — Get the list of required documents and download the correct forms instantly
-- Fully Responsive — Works smoothly on desktop and mobile
+- Upload a PDF, image, or text file — or just paste the letter text
+- Gemini reads the letter and returns a structured explanation
+- Shows the sender, deadline, what you need to do, and how urgent it is
+- Sample letters included to try without uploading anything
 
-Tools
-React 19
- – Frontend framework
+## Stack
 
- React Router v7
- – Routing
+- React
+- Gemini 2.5 Flash API
+- Deployed on Vercel
 
-Tailwind CSS
- – Styling
+## Running locally
 
-Font Awesome
- – Icons
+1. Clone the repo
+2. Install dependencies
 
- React Scripts
- – Build tooling
+```bash
+npm install
+```
+
+3. Create a `.env` file in the root and add your Gemini API key
+
+```
+REACT_APP_GEMINI_KEY=your_key_here
+```
+
+Get a free key at [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+
+4. Start the dev server
+
+```bash
+npm start
+```
+
+## Live demo
+
+[buro-de.vercel.app](https://buro-de.vercel.app)
+
+---
+
+Built by [S4RANGAN](https://sarangan16.github.io/sarangan/)
