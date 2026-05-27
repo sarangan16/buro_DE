@@ -251,9 +251,7 @@ function Home() {
                 color: "rgba(30,25,20,0.3)",
               }}
             >
-              <a href="https://sarangan16.github.io/sarangan/" target="_blank">
-                developed by - Raavn
-              </a>
+                developed by - Sarangan
             </span>
           </div>
         </div>
