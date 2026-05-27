@@ -251,7 +251,7 @@ function Home() {
                 color: "rgba(30,25,20,0.3)",
               }}
             >
-                developed by - Sarangan
+              developed by - Sarangan
             </span>
           </div>
         </div>
